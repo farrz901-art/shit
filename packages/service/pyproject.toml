@@ -21,7 +21,7 @@ dependencies = [
   # === LLM / Embedding / RAG 栈 ===
   "langfuse>=3.0.0", # LLM 调用可观测性 (src/telemetry/langfuse_client.py), 链路 trace + token 用量统计
   "mem0ai[nlp]>=2.0.5", # 对话记忆层 (src/memory/mem0_client.py) — PyPI 包名 mem0ai, import 仍用 mem0
-  "spacy==3.8.13", # 知识图谱规则抽取器直接依赖 (src/kg/extractors/spacy_rule/extractor.py), 跟 mem0ai[nlp] pin 对齐, 防版本漂移
+  "spacy==3.8.16", # 知识图谱规则抽取器直接依赖 (src/kg/extractors/spacy_rule/extractor.py), 跟 mem0ai[nlp] pin 对齐, 防版本漂移
   # === 向量 / 关系存储 ===
   "psycopg[binary]>=3.3.4", # PostgreSQL 驱动 v3, [binary] 带 libpq 客户端免编译; pgvector + asyncpg 走它
   "asyncpg>=0.30.0", # PostgreSQL 异步驱动 (FastAPI AsyncEngine 走它, src/approvals/router.py:94)
