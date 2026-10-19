@@ -1,0 +1,5 @@
+注意　必须: 电压偏离额定值时, 立即断电保护设备.
+
+Motor must not be used. 警告！危险区域. 禁止操作.
+
+WARNING: Operating voltage deviation may cause damage.

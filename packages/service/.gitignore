@@ -1,0 +1,20 @@
+/pdfs/*
+/pdf-test/*
+/output/*
+*.pyc
+/data/*
+ingest_uploads/*
+
+# SQLite 数据库文件 (storage layer, 2026-06-09)
+/data/*.db
+/data/*.db-*
+# 保留 data/.gitkeep 占位文件, 让空目录能入库
+!data/.gitkeep
+
+# pytest-cov 产物 (2026-06-19 code-quality spec, 本地开发不入库)
+.coverage
+.coverage.*
+htmlcov/
+coverage.lcov
+coverage.xml
+

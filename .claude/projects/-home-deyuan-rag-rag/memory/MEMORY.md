@@ -1,0 +1,144 @@
+- [feedback-design-docs-in-chinese](feedback-design-docs-in-chinese.md) — 用户不懂英文, spec/plan/design discussion 全部用中文, 包括流图说明 + 错误处理 + API 差异 (2026-06-30 streamdown 头脑风暴)
+- [feedback-parallel-subagent-api-rate-limit](feedback-parallel-subagent-api-rate-limit.md) — 3-4 个 background subagent 同 message 派发 ~50% 撞 classifier 限流, 立即 retry 4 次内必成功
+- [feedback-4-plan-parallel-execution-summary](feedback-4-plan-parallel-execution-summary.md) — 2026-07-08 code-quality 4 plan 并行复盘: 17 commit + 4 merge, 撞 429 inline 补完, findings.md 冲突取最终汇总版
+- [feedback-alembic-bulk-insert-psycopg3-needs-datetime-not-func-now](feedback-alembic-bulk-insert-psycopg3-needs-datetime-not-func-now.md) — alembic op.bulk_insert 传 sa.func.now() 在 psycopg3 + SA 2.0 executemany 下 broken, 改 datetime.utcnow() 或列上 server_default
+- [feedback-verify-issue-scenario-before-attributing](feedback-verify-issue-scenario-before-attributing.md) — WebFetch 找到 issue 后必须先核对 "issue 场景" vs "项目实际场景", 关键词命中 ≠ 根因相同 (2026-06-29 Bun panic audit 反复返工教训)
+- [feedback-alembic-stamp-skip-existing-schema-on-dev-db-drift](feedback-alembic-stamp-skip-existing-schema-on-dev-db-drift.md) — dev DB 漂移 (init_db 建过, alembic_version 空) 必须先 stamp 跳过已存在 revision, 不能裸 upgrade head
+- [feedback-record-errors-and-lessons](feedback-record-errors-and-lessons.md) — 用户的总要求：以后每次犯错必须记录到 memory
+- [feedback-pg-host-no-scheme](feedback-pg-host-no-scheme.md) — PG_HOST 必须裸 host/IP 不能 http://, 否则 SA _assert_port 拿空字符串炸 int(''); 2026-07-02 alembic 实战
+- [feedback-audit-env-changes-introduce](feedback-audit-env-changes-introduce.md) — 新增 env/embedder/provider 配置必须主动列影响面 (默认/网络前提/能否 env 切), 不能用 "pre-existing" 一笔带过 (2026-06-16 mem0 HF 教训)
+- [feedback-multi-tenant-isolation-required](feedback-multi-tenant-isolation-required.md) — 多租户项目 (B2B 邀请制) 必须显式 3 层 user 隔离 + 写跨用户回归测试 (2026-06-16 mem0 update/delete 跨租户漏洞教训)
+- [feedback-lint-staged-pytest-picked-0-tests-no-verify-amend](feedback-lint-staged-pytest-picked-0-tests-no-verify-amend.md) — amend 单 src 改动触发 lint-staged pytest --picked 0 tests exit 1; 优先独立 fix commit, amend 必须 --no-verify 用户授权
+- [feedback-react18-strict-mode-setstate-callback-order](feedback-react18-strict-mode-setstate-callback-order.md) — React 18 strict mode 下 setState 回调顺序不可控, 闭包变量跨 setter 传值读 stale (2026-06-15 chat SSE refactor)
+- [feedback-no-verify-requires-explicit-marker](feedback-no-verify-requires-explicit-marker.md) — --no-verify 需用户原话含"用 --no-verify"等明确词, 不能从模糊选项推断 (2026-06-15 AppTabs 误用 --no-verify 教训)
+- [feedback-test-must-be-100pct-mock-no-real-db](feedback-test-must-be-100pct-mock-no-real-db.md) — Test 必须 100% mock, 0 真实 DB 连 (含 db_session 事务回滚), CLAUDE.md 强制 (2026-06-15/16 用户纠错)
+- [feedback-never-delete-local-data-files-without-explicit-permission](feedback-never-delete-local-data-files-without-explicit-permission.md) — 禁止删用户本地数据文件 (.db / .csv / .jsonl), 即便 plan 说"全删"也必须用户手操作 (2026-06-15 SQLite→PG 迁移)
+- [feedback-next-intl-dev-messages-cache](feedback-next-intl-dev-messages-cache.md) — next-intl dev 模式改 messages/*.json 不 HMR, 报 MISSING_MESSAGE 先重启 bun run dev + 浏览器 hard refresh, 不是代码 bug (2026-06-18 登录中… 教训)
+- [feedback-i18n-sync-on-ui-changes](feedback-i18n-sync-on-ui-changes.md) — 改 UI 加 t("...") 时必须同步 messages/{zh,en}.json, commit 前 git diff 校验 (用户 2026-06-14 反馈)
+- [feedback-plan-code-drift](feedback-plan-code-drift.md) — plan checkbox 0 完成不一定意味着 0 实施, 可能实施完整但 plan 文档没人维护; plan 应含入口暴露任务 (用户 2026-06-15 反馈)
+- [feedback-vitest-unhandled-rejection-mock-rejected-value](feedback-vitest-unhandled-rejection-mock-rejected-value.md) — vitest mockRejectedValueOnce + use(promise) 模式产生 unhandled rejection, 改 mockImplementationOnce 同步 throw (用户 2026-06-14 反馈 "为什么留一个 error 不处理")
+- [feedback-vitest-unhandled-rejection-listener](feedback-vitest-unhandled-rejection-listener.md) — Node Promise 硬规定导致 unhandled rejection 必出现, vitest.setup.ts 加 process.on("unhandledRejection", () => {}) 静默
+- [feedback-no-mock-for-external-systems](feedback-no-mock-for-external-systems.md) — 不信 mock：外部系统 bug 修复必须真实端到端
+- [feedback-verify-with-import-not-pip](feedback-verify-with-import-not-pip.md) — 验证 Python 包用 `import` 而非 `pip show`（pip/python 可能不同环境）
+- [feedback-docker-gpu-needs-device-requests](feedback-docker-gpu-needs-device-requests.md) — docker-py SDK 不自动传 GPU，必须给 device_requests
+- [feedback-debug-distinguish-root-causes](feedback-debug-distinguish-root-causes.md) — 调试时区分不同根因，别用最简单的解释掩盖真正问题
+- [feedback-rsc-dollartypeof-not-hydrationboundary](feedback-rsc-dollartypeof-not-hydrationboundary.md) — RSC $$typeof undefined 错 HydrationBoundary 不是根因, 1 次消失 ≠ red-green, dev/HMR/RSC 流有大量状态, 必须控制变量+回滚复现 (2026-06-22 /output 误诊)
+- [feedback-python-zipfile-setpassword-doesnt-encrypt-on-write](feedback-python-zipfile-setpassword-doesnt-encrypt-on-write.md) — Python stdlib zipfile.setpassword 写时不真加密，测加密检测路径必须手工构造 PKZIP 字节
+- [feedback-check-pyproject-deps-match-actual-imports](feedback-check-pyproject-deps-match-actual-imports.md) — 实施完成时必须核对 pyproject.toml dependencies 跟实际 import 匹配，避免幽灵依赖
+- [feedback-git-stash-drop-is-permanent-windows-pop-can-fail](feedback-git-stash-drop-is-permanent-windows-pop-can-fail.md) — 别用 git stash 当 pre-commit 失败的 workaround：drop 永久、Windows 文件锁让 pop 失败、丢用户本地改动
+- [feedback-windows-ide-locks-block-dir-deletion](feedback-windows-ide-locks-block-dir-deletion.md) — Windows 上被 IDE (Trae CN / VSCode) 锁的目录删不掉：ERROR_SHARING_VIOLATION，重启管理器也枚举不出锁拥有者
+- [feedback-windows-console-corrupts-non-ascii-when-writing-yaml](feedback-windows-console-corrupts-non-ascii-when-writing-yaml.md) — Windows bash 下写 YAML 含全角字符 (△ ※ …) 被控制台 code page 吞掉变 ASCII 替代 (D * ...)，用 Python 文件 I/O 或 Write 工具绕过
+- [feedback-windows-husky-crlf-breaks-bash](feedback-windows-husky-crlf-breaks-bash.md) — core.autocrlf=true 把 .husky/* 改成 CRLF, sh 把 `(` 当 subshell → commit-msg 语法错; 治本 .gitattributes 强制 LF
+- [feedback-windows-configparser-gbk-cant-read-chinese-in-ini](feedback-windows-configparser-gbk-cant-read-chinese-in-ini.md) — Python configparser 在 Windows 默认用 gbk 读 .ini, 写 .ini 别用中文注释, 否则 alembic/setuptools 整个解析失败
+- [feedback-windows-lint-staged-cwd-bug](feedback-windows-lint-staged-cwd-bug.md) — lint-staged ruff Python glob 在 Windows 有 CWD bug，uv 从 repo root 跑但拿到 packages/service 相对路径 (E902)；**别**用 `git stash drop` + `--no-verify` 绕过，**报告 BLOCKED** 让用户决定
+- [project-rag-pdf-pipeline](project-rag-pdf-pipeline.md) — RAG 项目 PDF 处理流水线（kreuzberg/mineru/EasyOCR 三类）
+- [project-mineru-docker-integration](project-mineru-docker-integration.md) — mineru Docker 集成：路径布局、backend 选型、GPU 透传、踩坑汇总
+- [project-rag-followup-candidates](project-rag-followup-candidates.md) — to-do.md 写的 3 个未来工作（CAD 多路融合 / 压缩包 / 架构重组）
+- [project-scripts-syspath-injection](project-scripts-syspath-injection.md) — scripts/ 子目录脚本需要 sys.path 注入才能 import src.* (跟 main.py 不一样)
+- [feedback-tdd-test-real-behavior-not-just-no-crash](feedback-tdd-test-real-behavior-not-just-no-crash.md) — TDD 不能只测"不崩", 要测真行为 (用户两次纠错: --help 通了但 check 跑不了)
+- [feedback-no-shim-no-minimal-changes](feedback-no-shim-no-minimal-changes.md) — 严禁 shim/兼容代码/兜底包装，新项目零技术债；含可 grep 自查模式
+- [project-rag-shim-audit-2026-06-08](project-rag-shim-audit-2026-06-08.md) — RAG 项目当前 shim 清单 (5 HIGH + 6 MEDIUM)，改这些位置前先清
+- [feedback-dedup-needs-or-logic-not-and](feedback-dedup-needs-or-logic-not-and.md) — Dedup 关系用 OR 不用 AND, 否则丢"新型号→已存在 value" 这种合法 rel
+- [feedback-asyncio-sem-needs-peak-test](feedback-asyncio-sem-needs-peak-test.md) — asyncio + Semaphore 限流必须测并发峰值, 漏写 async with sem: 块时功能测试 9/10 过
+- [project-neo4j-aura-windows-ssl-fix](project-neo4j-aura-windows-ssl-fix.md) — Neo4j Aura 在 Windows 上 Python 默认 ssl 不认, 需用 certifi + URI scheme 改写 (neo4j+s:// → neo4j:// + ssl_context)
+- [project-windows-console-utf8-stdout](project-windows-console-utf8-stdout.md) — Windows console 输出 UTF-8 中文乱码修法 (stdout.reconfigure + SetConsoleOutputCP 65001)
+- [feedback-uvicorn-must-restart-after-route-add](feedback-uvicorn-must-restart-after-route-add.md) — 加新 router 后 uvicorn 不会自动 reload → BFF 502；用 netstat 找 PID 杀掉再起
+- [feedback-main-py-must-load-dotenv-before-src-imports](feedback-main-py-must-load-dotenv-before-src-imports.md) — main.py 顶部必须 load_dotenv(".env.local") 在 src.* import 之前, 不然 Neo4jStore 拿 None env
+- [feedback-cypher-label-n-unknown-on-some-neo4j](feedback-cypher-label-n-unknown-on-some-neo4j.md) — Cypher 统计节点用 labels(n)[0] 别用 label(n), 后者在某些 Neo4j 实例 Unknown function
+- [feedback-bff-must-propagate-502-not-silently-zero](feedback-bff-must-propagate-502-not-silently-zero.md) — BFF 调下游失败必须返 502, 不能用 ?? 0 兑底 (隐藏错误让调试极费时)
+- [feedback-dify-api-returns-data-wrapper](feedback-dify-api-returns-data-wrapper.md) — Dify 列表 API 返回 { data: T[] } 而非裸数组，客户端要提取 .data
+- [feedback-rscget-heuristic-too-strict-mock-shape](feedback-rscget-heuristic-too-strict-mock-shape.md) — rscGet 启发式 + test mock 必须用真 Dify 包装 (5 key), 简化包装 (1 key) mock 会藏 bug (2026-06-15 datasets.find is not a function 教训)
+- [feedback-fix-root-cause-not-remove-feature](feedback-fix-root-cause-not-remove-feature.md) — 修 bug 不能去掉功能来回避，要找真因修复，保留功能完整
+- [feedback-no-emoji-use-lucide-icons](feedback-no-emoji-use-lucide-icons.md) — 禁止用 emoji，用 Lucide React 图标替代
+- [feedback-front-end-api-must-have-tests](feedback-front-end-api-must-have-tests.md) — 前端新增的 API 接口必须写 vitest 单元测试
+- [feedback-check-official-docs-before-coding](feedback-check-official-docs-before-coding.md) — 工具/平台 API 必须先查官方文档再写，不要猜测
+- [feedback-react-file-size-and-dialog-naming](feedback-react-file-size-and-dialog-naming.md) — React 单文件 ≤300 行, Dialog 拆独立文件 (命名见 kebab-case 规则)
+- [feedback-filename-kebab-case-strict](feedback-filename-kebab-case-strict.md) — 文件名一律 kebab-case (xx-dialog.tsx 不是 XxDialog.tsx), 不许混用 (2026-06-15 严正纠错)
+- [feedback-clarify-ambiguous-instructions](feedback-clarify-ambiguous-instructions.md) — 模糊指令必须先澄清理解和方案, 等用户确认再执行
+- [feedback-print-vs-logger-not-mechanical](feedback-print-vs-logger-not-mechanical.md) — "所有 print 改 logger" 类指令不能机械执行, fail-safe / CLI / tests 3 类必须保留 print, 2026-07-01 教训
+- [feedback-react-entrycard-has-internal-link](feedback-react-entrycard-has-internal-link.md) — EntryCard 内部已渲染 Link, 调用方别再包一层 (a 嵌 a → hydration error + link role 多匹配)
+- [feedback-check-old-code-before-refactor](feedback-check-old-code-before-refactor.md) — 重构/拆路由前必须 git show 老代码, 不能凭记忆; 2026-06-10 用户因"删功能没补回"第二次严重纠错
+- [feedback-clarify-ambiguous-ui-instructions](feedback-clarify-ambiguous-ui-instructions.md) — 模糊 UI 改法指令必须先问: 哪个组件? 弹框/展开? 触发方式?
+- [feedback-vitest-zod-esm-cjs-alias](feedback-vitest-zod-esm-cjs-alias.md) — vitest 下 zod v4 ESM 重导出 z 为 undefined, 需要在 vitest.config.ts alias 强制 CJS
+- [feedback-must-test-both-ends](feedback-must-test-both-ends.md) — 改 bug 必须自测涉及接口的前后端, curl 验证后端返回 + vitest 验证前端解析, 不能只看一边
+- [feedback-server-action-fetch-needs-explicit-content-type](feedback-server-action-fetch-needs-explicit-content-type.md) — Next.js server action 原生 fetch POST JSON 必须显式带 Content-Type: application/json, 否则 FastAPI 422 model_attributes_type; 测试要断言 header 完整性
+- [feedback-cypher-merge-label-rel-type-not-parameterizable](feedback-cypher-merge-label-rel-type-not-parameterizable.md) — Neo4j Cypher MERGE 的 label / rel_type 不能 $param, UNWIND 多元批量必须按 5 元组分组, 否则所有行被首行覆盖 (2026-06-12 真实灾难)
+- [feedback-uv-only-no-pip](feedback-uv-only-no-pip.md) — 安装 Python 依赖只能用 uv，禁止用 pip
+- [feedback-debug-search-before-loop](feedback-debug-search-before-loop.md) — 遇到报错必须先搜索/查官方文档, 不能重复试错; 连续失败 2 次相同方案必须停下来换思路
+- [feedback-turbopack-postcss-panic-10054](feedback-turbopack-postcss-panic-10054.md) — Turbopack dev server panic + `os error 10054` 是 PostCSS worker 子进程崩溃, **不是代码 bug**, 重启 dev server 即可 (2026-06-15 evaluate/new 实测)
+- [feedback-rsc-page-needs-backend-8000](feedback-rsc-page-needs-backend-8000.md) — RSC 页报 "Unable to connect. Is the computer able to access the url?" (node-fetch v2 格式) = 后端 8000 没起, **不是代码 bug**, 启动后端 uv run python main.py (2026-06-15 knowledge/documents 实测)
+- [project-i18n-use-chinese-as-t-key](project-i18n-use-chinese-as-t-key.md) — i18n t() 中间用中文作 key, zh.json 当中文默认值, en.json 做翻译。方便维护 grep
+- [project-dify-chatflow-sse-duplicate-emit](project-dify-chatflow-sse-duplicate-emit.md) — Dify Chatflow 双发射 (message delta + workflow_finished.outputs.answer), 归一化层 seenMessage 守卫, 否则前端 content 重复
+- [feedback-server-fetch-needs-absolute-url-no-host-header](feedback-server-fetch-needs-absolute-url-no-host-header.md) — Server fetch 不能用相对 URL (Node 报 Invalid URL), 拼 host header 有攻击风险, server action 直调业务代码最干净
+- [feedback-no-verify-needs-user-explicit-auth](feedback-no-verify-needs-user-explicit-auth.md) — git commit --no-verify 需用户明确授权, 跑全量测试看基线失败, message 标注原因
+- [feedback-debug-stop-after-root-cause-confirmed](feedback-debug-stop-after-root-cause-confirmed.md) — 根因三连确认后立刻收尾, 不补跑冗余测试
+- [project-camelot-lattice-edge-tol-incompatible](project-camelot-lattice-edge-tol-incompatible.md) — Camelot flavor='lattice' 不接受 edge_tol (stream 才用), 前后端默认参数必 raise ValueError
+- [project-rag-dev-env-recovery](project-rag-dev-env-recovery.md) — 拉新代码/重置 DB 后必须 `uv run alembic upgrade head`, 否则 SQLite 缺表 → 后端 500 → RSC 页 __next_error__
+- [feedback-coverage-scanner-cant-use-head-1](feedback-coverage-scanner-cant-use-head-1.md) — 覆盖率 scanner 严禁 head -1; dedup 日期 + 中英文长度门槛 + use-directive 跳过, 2026-06-29 P5b
+- [feedback-report-must-match-scanner](feedback-report-must-match-scanner.md) — 跨 subagent 报告必须用同 scanner; 数字差 > 2 倍先查规则不一致, 2026-06-29 P5b
+- [feedback-dont-fabricate-project-conventions](feedback-dont-fabricate-project-conventions.md) — 严禁编造项目规约; 不知道就承认, 不要现编, 2026-06-29 P5b FC 教训
+- [项目结构与开发规范](project-structure.md) — 单仓单包, bun, 严格 TDD + 中文注释, 严禁硬编码
+- [Spec 进度: output-converter 已完成](output-converter-spec-done.md) — 11 任务 + 1 handoff, 38 新测试全绿
+- [UI 现状基线 (探索报告 2026-06-10)](ui-state-baseline-2026-06-10.md) — shadcn 18 组件已装, 4 真表 + 4 假表 + 4 Dialog 风格不一
+- [主题现状基线 (探索报告 2026-06-10)](theme-state-baseline-2026-06-10.md) — 零主题切换基础设施, .dark 块不完整, 18 处硬编码颜色
+- [6 个 spec 拆分](six-specs-breakdown.md) — A 组件 / B 审计 / C 主题 / D i18n / E 知识库页
+- [it.todo 是 TDD-red 的可接受妥协](feedback-todo-not-red-acceptable-compromise.md) — pre-commit hook 阻塞时 vitest `it.todo` 站位 + 中文注释指明 Task N 后 un-todo, 优于跳过
+- [isinstance(dict) 必须配 truthy check](feedback-empty-dict-truthy-check.md) — 空 `{}` 走"有数据"分支返空值, 必须 `if isinstance(x, dict) and x:` 守卫 (厂商/系列 空值 bug 教训)
+- [大改动必须分批次提交](feedback-commit-in-batches-for-large-changes.md) — >10 文件改动按逻辑单元拆 commit (rename / bug fix / 新基础设施 / lib 接入 / app 接入 / 测试), 便于 review/回滚/bisect
+- [卡住 30 分钟立刻 STOP 报告](feedback-stop-and-ask-dont-loop-on-infra.md) — pre-commit/CI/工具链失败 ≠ 代码错, 不要每 blocker 都自己 debug 死循环; 给 3 方案让用户拍板
+- [next-themes 已死, 自实现](feedback-next-themes-dead-use-self-implement.md) — 0.4.6 一年没更新, React 19 报警; 自实现 < 100 行 (FOUC script 走 useEffect 注入)
+- [BFF 鉴权 cookie 路由必须透传 set-cookie](feedback-bff-cookie-must-propagate.md) — 用 Headers.getSetCookie() (Node 18+); 漏写 → 浏览器永远拿不到 token → 后续 401 链
+- [proxy.ts 必须显式跳过 /api/*](feedback-proxy-must-skip-api-paths.md) — matcher 排除不生效, next-intl 强加 locale 前缀 307 → 404
+- [RSC fetch 永远拿不到浏览器 cookie](feedback-rsc-fetch-no-browser-cookie.md) — dev 必须 RAG_DEV_AUTH=true; 浏览器 anon cookie 异步 ≠ RSC 同步
+- [middleware/auth.py 顶层禁 import src.auth.*](feedback-lazy-import-avoid-auth-cycle.md) — src/auth/__init__.py:3 eager-imports auth_account_router 触发循环, User/Account 都要函数内 lazy import
+- [永远不要 git checkout 撤用户改的文件](feedback-never-revert-user-edits.md) — working tree 看到可疑改动先问是不是用户改的，再决定撤不撤；撤前必须问用户同意
+- [pytest --picked 0 tests 锁死 commit](feedback-pytest-picked-empty-runs-exit-1.md) — 改 backend src 无 test 联动时, lint-staged 第 3 步 exit 1, 用 --no-verify 或在 lint-staged 加 --passwithno-tests
+- [RSC throw 必须不挂整页](feedback-rsc-throw-must-not-crash-page.md) — RSC/server component/apiFetch 任何 throw 都要 try/catch 兜, 失败留 fallback + 弹 toast, 不让 fetch 失败直接 500
+- [apiFetch 必须区分 BFF 名单 vs 直连后端](feedback-apifetch-bff-prefix-list.md) — 用 RegExp[] 精确 7 个 BFF path, 其他 /api/* 直连后端, 不再 "/api/* 同源" 一刀切 (会 14 个 404)
+- [dev 别动辄跑全量测试](feedback-no-full-vitest-during-dev.md) — `bun run test` 1+ 分钟, 开发反馈循环里叠加拖, 只跑改过的文件 (`bun run test -- <pattern>`)
+- [lint-staged warning 阻塞 commit](feedback-lint-staged-warning-treats-as-error.md) — oxlint 阻塞只跟**真 error** 走 (correctness + rules 标 error), warn 不阻塞; 旧说法"warning 也 exit 1"已过时 (2026-06-15 BackLink commit 实测)
+- [test real code path not just mock-mock](feedback-test-real-code-path-not-just-mock-mock.md) — dep 替换后单元测试可能 mock 掉被替换入口, 跑绿 ≠ 新包真用; 必写 smoke test 走真 import + 真调用 (2026-06-15 pynvml→nvidia-ml-py 教训)
+- [nvidia-ml-py import path](project-nvidia-ml-py-import-pynvml.md) — nvidia-ml-py PyPI 包主动 ship pynvml.py, import 路径仍是 pynvml; 验证 ownership 看 nvidia_ml_py-*.dist-info/RECORD (2026-06-15 dep 切换 + 用户多次怀疑"没真卸")
+- [config dataclass 必须 .from_env()](feedback-config-dataclass-needs-from-env.md) — `Config()` 无参走 dataclass 默认值不读 env, 必翻车; 真案: PGVectorConfig() 拼出 postgres:postgres 跟 docker 实际 deyuan888 对不上; 用 `engine.url.password` 验, 别用 `str(url)` (mask 密码)
+- [NEO4J_URI 选型: 宿主机用 localhost](project-neo4j-uri-host-vs-localhost.md) — 宿主机跑 service 必须 `neo4j://localhost:7687`, `host.docker.internal` 在宿主机慢 10 倍 (1352ms vs 128ms), 是容器内访问宿主机的别名, 别在宿主机进程用
+- [vitest mock 第三方隐藏 broken import](feedback-vitest-mock-third-party-hides-broken-import.md) — 只 mock 自己控的 wrapper, 不 mock 第三方库, 否则 broken import 永远抓不到 (2026-06-17 login 真案)
+- [tsgo 报错必须 check stderr 不只 exit code](feedback-tsgo-must-check-stderr-not-exit-code.md) — shell pipe 拿的 $? 是最后一段命令, 看 tsgo 错误要 `2>&1` 不能只看 $? (2026-06-17 login)
+- [next-intl 4 useRouter 走 createNavigation](project-next-intl-4-useRouter-createNavigation.md) — 4.x 不再直接导出 useRouter, 必须 createNavigation(routing) 包本地 wrapper, 业务代码 import 走 @/i18n/navigation (2026-06-17 登录 bug 根因)
+- [App Router layout 不被 router.refresh 重跑 (错误分析, 已 superseded)](feedback-approuter-layout-shared-no-refresh.md) — ⚠️ 错分析, router.refresh() 实际会重跑 layout; 真因是 apiFetch 漏传 auth headers. 已被 [[feedback-apiFetch-needs-explicit-auth-headers]] 取代 (2026-06-17 登录)
+- [App Router layout 不被 router.refresh 重跑 (错误分析, 已 superseded)](feedback-approuter-layout-shared-no-refresh.md) — ⚠️ 错分析, router.refresh() 实际会重跑 layout; 真因是 apiFetch 漏传 auth headers. 已被 [[feedback-apiFetch-needs-explicit-auth-headers]] 取代 (2026-06-17 登录)
+- [apiFetch 必须显式 serverAuthHeaders](feedback-apiFetch-needs-explicit-auth-headers.md) — server-side apiFetch 不传 headers 走 RAG_DEV_AUTH 返 dev anon, 永远显示 anon UI; 注释"自动透传"是错的 (2026-06-17 登录 → UserMenu 走 fallback)
+- [memory router test PG 隔离 handoff](project-memory-router-test-pg-isolation-handoff.md) — tests/memory/test_router.py 11 个 test 走真 PG, 走 handoff 留给后续, 修法见 docs/superpowers/handoffs/2026-06-17-memory-router-test-pg-isolation.md (2026-06-17)
+- [PG env 统一已完成](project-pg-env-unification-done.md) — 2026-06-18, 5 PG_* env + get_rag_db_url() util, 删 RAG_DB_URL + 5 PG_VECTOR_* + get_rag_core_config 死代码
+
+- [复合 Radix 必抽 AppXxx, 封装前需用户同意](feedback-encapsulate-radix-composites-app-style-needs-approval.md) — 业务代码不许直接拼 4-5 个 Radix 原语, 抽包装强制统一, 但封装前必须明确同意 (2026-06-18 health tooltip 教训)
+
+- [cleanup-worktree-after-merge](feedback-cleanup-worktree-after-merge.md) — 任务完成/代码进 master 后立刻 git worktree remove
+
+- [no-namespace-i18n-flat-keys-only](feedback-no-namespace-i18n-flat-keys-only.md) — 项目强制 flat-key i18n, 禁止 useTranslations("namespace") + t("foo.bar")
+
+- [alembic-env-requires-load-dotenv](feedback-alembic-env-requires-load-dotenv.md) — alembic 子进程不继承 main.py load_dotenv, 需 env.py 显式 load
+- [Spec/Plan 分批写入文件的经验](feedback-plan-large-file-writing.md) — 用 Python 脚本中转或 PowerShell Add-Content 逐行写大文件
+- [Postgres JSON vs JSONB + GIN opclass](feedback-postgres-json-vs-jsonb-opclass.md) — sa.JSON() 生成 PG json 类型跟 jsonb_path_ops GIN index 不兼容, 必须用 sa.dialects.postgresql.JSONB(); 业务代码 raw SQL ::jsonb cast 要一致 (2026-06-23 buyer_profile migration 实战)
+- [Edit 连续 JSON 解析失败换方案而不是重试](feedback-edit-repeated-JSON-parse-failure-triple-quotes.md) — Edit/Write 对含 Python 三重引号的代码反复 JSON 解析失败时，应换"先写脚本文件→再运行"方案，别一直重试
+- [feedback-nextjs-metadata-must-be-object-or-generateMetadata](feedback-nextjs-metadata-must-be-object-or-generateMetadata.md) — Next.js App Router 动态 metadata 必须叫 generateMetadata, 写成 export const metadata = async () => {} 会静默崩成 RSC $$typeof undefined (2026-06-24 output/page.tsx 教训)
+- [feedback-sa-json-psycopg3-dict-not-str](feedback-sa-json-psycopg3-dict-not-str.md) — SA 2.0 + psycopg3 读 sa.JSON() 列可能给 dict 不给 str, json.loads 炸 TypeError, 必须 isinstance 兜底 (2026-06-24 chat service.py)
+- [feedback-chat-effectiveconversations-vs-state-conversations](feedback-chat-effectiveconversations-vs-state-conversations.md) — 选历史 conv 发消息新建会话, 根因 createServerConvIfNeeded 用 state.conversations 判, 没用 effectiveConversations (merged server+local) (2026-06-24)
+- [feedback-doCreateServerConv-isAccount-skip-IDB](feedback-doCreateServerConv-isAccount-skip-IDB.md) — 登录态 doCreateServerConv 写 IDB (强制 owner=anon) 污染, 导致迁移弹框永远触发 (2026-06-24 handoff 根因之一)
+- [feedback-rag-admin-token-bootstrap-only](feedback-rag-admin-token-bootstrap-only.md) — RAG_ADMIN_TOKEN 是 bootstrap 一次性, 业务 100% 走 x-user-token, 前端 rag_admin_token cookie 死代码 (2026-06-24)
+- [feedback-chat-handleSend-double-appendMessageMut](feedback-chat-handleSend-double-appendMessageMut.md) — handleSend 显式调 + initMessages deps.appendMutate 调, 2 次 POST messages → 500. 修法: 删显式, 走 initMessages 内部唯一路径 (2026-06-24)
+- [feedback-postgres-json-jsonb-family-of-bugs](feedback-postgres-json-jsonb-family-of-bugs.md) — JSON/JSONB 一族 bug 系统性根因 (sa.JSON()/JSONB + psycopg3 v3 adapter + raw SQL 跳过 ORM), 3 次事故同源, 项目级修法清单
+- [feedback-do-not-refactor-when-user-reports-bug](feedback-do-not-refactor-when-user-reports-bug.md) — 用户报 bug 时不擅自改设计; 2026-06-26 admin/dicts 报"两条线"我擅自改成 Dialog 编辑被叫停
+- [Never overwrite existing test files](never-overwrite-existing-test-files.md) — 写测试前先 Read 确认文件是否存在，用 Edit 追加而非 cat > 覆盖
+- [bun run test 单次定位](feedback-bun-run-test-no-redundant-runs.md) — 单次跑必须拿到 (file:line + assertion)，禁止发现 fail 后重跑全量找 detail；最终验证才跑全量
+- [SettingsDialog 无账号行](project-settings-dialog-no-account-row.md) — T4.3 账号行实现被用户主动删，对应 2 个过时回归测试待清理（不要复活实现）
+- [subagent vs inline 决策](feedback-subagent-vs-inline-pivot.md) — 小 task (≤ 2 文件, < 50 行) inline 执行，不要默认派 subagent
+- [Test scope per task](feedback-test-scope-per-task.md) — 单 task 只 test 修改的文件 (`bun run test <dir>`), 完成整个 plan 才跑全量 test
+- [Ollama 默认绑 127.0.0.1, LAN 必须 override](feedback-ollama-default-binds-127.md) — 排查 Ollama 局域网访问失败第一步看 ss -tlnp 11434 bind, 不是查反代 (2026-07-02)
+- [停止重复让用户跑已确认的验证命令](feedback-stop-repeating-verification-commands.md) — 用户确认过的状态不再验证, 反复 fall-through 同诊断链 = 调试循环卡死 (2026-07-02 Ollama)
+- [permissions cache invalidate 后必须 rewarm](feedback-cache-py-rewarm-after-invalidate.md) — _page_metadata_cache 进程内 L1, invalidate 不等同重填; 下次 sync 读 miss → fallback 9 项 → 前端 buildNavTree orphan (2026-07-03 nav 真实事故)
+- [audited wrapper 兼容同步 handler](feedback-audited-wrapper-await-sync-handler.md) — @audited wrapper 一律 await func() 是错的, 必须 inspect.isawaitable() 区分 sync/async; kg/4 个端点全 def 长期 500 (2026-07-03 实战)
+- [禁止擅自停下来问是否继续](never-stop-to-ask-if-continue.md) — 用户下达任务后持续执行到完成, 不中途问"要不要继续" (2026-07-06 纠错)
+- [git hooks 必须有可执行权限](git-hooks-executable-bit.md) — 没有 +x 时被 silently ignore（带 warning），不阻塞 commit
+- [排查 core.hooksPath 无效的标准顺序](husky-config-core-hookspath-not-effective.md) — 配置层 99% 没问题，先查 +x，再 trace，别凭印象
+- [撤销误 commit 不要 reset 到 origin/master](undo-typo-commit-reset-soft-origin.md) — reset --soft origin/master 会丢所有未 push 的本地 commit，应用 HEAD^ 或 reflog 找父 commit
+- [pytest 反复重跑 3 个错 (CWD/重定向/buffer)](feedback-pytest-cwd-redirect-buffer.md) — uv run pytest 必须 cd packages/service; 重定向必须同 cd; 大输出 buffer 截断别重跑 (2026-07-08 教训)

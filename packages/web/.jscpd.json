@@ -1,0 +1,19 @@
+{
+  "minTokens": 50,
+  "minLines": 5,
+  "maxLines": 500,
+  "mode": "strict",
+  "ignore": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/coverage/**",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/e2e/**",
+    "**/.venv/**",
+    "**/migrations/**",
+    "**/__pycache__/**"
+  ],
+  "reporters": ["console", "markdown", "json"],
+  "output": "reports/duplication"
+}

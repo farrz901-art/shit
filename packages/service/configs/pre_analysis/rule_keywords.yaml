@@ -1,0 +1,67 @@
+# PDF 预分析规则配置 (2026-07-02 新建, 2026-07-07 v3 扩字段)
+#
+# 业务方决策 (PRD §业务方决策 1): 5 个中文关键词默认开启, 不追加;
+# 英文/德文 PDF 走 4 类 deontic 正则 + 2 weight 修饰 (hard constraint / soft suggestion).
+# 改 yaml + 重启服务生效 (CLAUDE.md §变更管理)
+
+# === 旧字段保留 (2026-07-02) ===
+keywords:
+  - 注意
+  - 不能
+  - 仅适用
+  - 必须
+  - 禁止
+
+chapter_patterns:
+  - "^\\s*第[一二三四五六七八九十百零]+章[\\s　]+"
+  - "^\\s*\\d+\\.\\d+(\\.\\d+)?[\\s　]+"
+  - "^\\s*#{1,6}\\s+"
+
+min_paragraph_length: 20
+
+# === 新字段 (2026-07-07 v3) ===
+
+# 4 类英文 deontic 正则 (联网核验降级: safe/rec 不进类别 dict, 走 weight 修饰)
+# 多词短语全部 \bword\s+word\b 形式, 修 "invalid for" 误匹配 "valid for" bug
+rule_patterns:
+  negation: "(?i)\\b(not|cannot|never|must\\s+not|should\\s+not|may\\s+not|forbidden|prohibited|excluded|not\\s+permissible|not\\s+possible|no|without)\\b"
+  obligation: "(?i)\\b(must|shall|should|will|is\\s+required\\s+to|have\\s+to|need\\s+to|ensure|make\\s+sure|only\\s+possible|necessary|obligation)\\b"
+  condition: "(?i)\\b(if|when|whereas|unless|provided\\s+that|as\\s+long\\s+as|except|apart\\s+from|depending\\s+on|subject\\s+to)\\b"
+  permission: "(?i)\\b(can|may|able\\s+to|capable\\s+of|suitable\\s+for|intended\\s+for|permissible|allowed|permit|approval)\\b"
+
+# 2 weight 修饰 (safe 升权 1.5x, rec 降权 0.5x), 命中后叠加 weighted_density
+safe_weight: 1.5
+rec_weight: 0.5
+
+# 段落切分默认 blocks (pymupdf get_text("blocks")), fallback 链可改 yaml
+paragraph_splitter: "blocks"
+paragraph_splitter_fallback: ["double_newline", "newline", "sentence_fallback"]
+
+# 规则密集度阈值 (is_dense = weighted_density ≥ dense_threshold)
+dense_threshold: 3
+
+# sentence_fallback 模式下滑窗合段上限
+max_sentence_chars: 200
+
+# 跨页 footer (8 中文 + 8 英文), seen_footers 去重 (Task 6 实施)
+cross_page_detection:
+  min_column_match: 0.8
+  footer_keywords:
+    - "续表"
+    - "续上表"
+    - "(续)"
+    - "接下页"
+    - "接上页"
+    - "下转"
+    - "转下页"
+    - "表 1 (续)"
+    - "cont."
+    - "(continued)"
+    - "continued"
+    - "cont'd"
+    - "continues"
+    - "continued on"
+    - "continued on next page"
+    - "to be continued"
+  # 字段本期不读 (Task 6 注释), 留占位后续扩展
+  footer_dedup: {}

@@ -1,0 +1,28 @@
+# RAG 评估数据集模板
+#
+# 格式: list[dict], 每条必须含 question, 推荐含 ground_truth
+# 可选字段: category, difficulty, notes (脚本忽略, 自己看着方便)
+#
+# 用法:
+#   1. 复制本文件, 改名为 my_eval.yaml
+#   2. 写到 30 题 (问题必须来自你 PDF 语料能回答的范围)
+#   3. uv run python scripts/batch_rag_eval.py --dataset my_eval.yaml
+#
+# 写题建议:
+#   - 问题多样化: 事实型 (X 是什么) / 数字型 (扭矩多少) / 比较型 (A 和 B 区别) / 操作型 (怎么装)
+#   - ground_truth 要有"具体答案", 别写"见 PDF"这种泛泛的
+#   - ground_truth 长度建议 20-200 字, 太短 RAGAS 没法评 recall
+
+- question: 1LE0001-1AA4-21-AA4 是什么系列?
+  ground_truth: 西门子 1LE0 低压高效三相异步电机, 1LE0001 开头表示机座号 100mm 2 极长机座
+  category: decoder
+  difficulty: easy
+
+- question: 西门子 1LE0 系列电机的能效等级标准是什么?
+  ground_truth: 1LE0 系列电机符合 IE3 高效等级 (中国能效等级 3 级), EFF3 标准
+  category: knowledge
+  difficulty: medium
+
+# ---- 复制上面 2 条模板, 继续往下写到 30 题 ----
+# 提示: 打开你的 PDF (pdfs/ 目录), 翻 3-5 个章节, 每个章节出 5-6 道题
+# 提示: Dify 工作流如果接的是特定知识库, 题目要落在该知识库能 cover 的范围

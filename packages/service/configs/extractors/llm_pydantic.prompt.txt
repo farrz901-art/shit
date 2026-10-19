@@ -1,0 +1,2 @@
+# 默认 prompt 已在 LlmPydanticExtractor._DEFAULT_PROMPT 硬编码
+# 此文件可作为业务覆盖入口

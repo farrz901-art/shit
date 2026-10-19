@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(gh search *)",
+      "WebFetch(domain:pypi.org)",
+      "Bash(git config *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(uv run *)",
+      "Bash(echo \"---exit:$?---\")",
+      "Bash(echo \"---pyflakes exit:$?---\")",
+      "Bash(uv sync *)",
+      "Bash(echo \"---ruff exit:$?---\")",
+      "Bash(echo \"---install exit:$?---\")",
+      "Bash(PYTHONIOENCODING=utf-8 uv run pre-commit autoupdate)",
+      "Read(//c/Users/abcuc/.cache/pre-commit/**)",
+      "Bash(git -C C:/Users/abcuc/.cache/pre-commit/repo0mcvqiyl/ tag --list)",
+      "Bash(echo \"---commit exit:$?---\")",
+      "Bash(git reset *)",
+      "Bash(echo \"---reset exit:$?---\")",
+      "Bash(echo \"---pyflakes:$?---\")",
+      "Bash(echo \"---ruff:$?---\")",
+      "Bash(echo \"---pre-commit:$?---\")",
+      "Bash(echo \"---commit:$?---\")",
+      "Bash(rm -rf pdfs/output/*)",
+      "Bash(.venv/Scripts/python main.py pdfs/ pdfs/output)",
+      "Bash(rm -rf pdf-test/output/*)",
+      "Bash(.venv/Scripts/python -c ' *)"
+    ]
+  },
+    "worktree": {
+    "baseRef": "head"
+  },
+  "skipWebFetchPreflight": true
+}

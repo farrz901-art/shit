@@ -1,0 +1,6 @@
+extractor_id: spacy_rule
+enabled: true
+spacy_model: zh_core_web_sm
+patterns:
+  - label: Product
+    pattern: "\\d[A-Z]{2}\\d{4}-[A-Z0-9]+"

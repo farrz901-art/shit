@@ -1,0 +1,325 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ========================================================================
+   字体变量 — 由 next/font 注入 CSS 变量
+   Geist Sans (UI + display) + JetBrains Mono (数字/代码)
+   ======================================================================== */
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-display: var(--font-geist-sans);
+  --font-mono: var(--font-jetbrains-mono);
+
+  /* shadcn 兼容色板 */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  /* 自定义品牌色 */
+  --color-ink: hsl(var(--ink));
+  --color-paper: hsl(var(--paper));
+  --color-clay: hsl(var(--clay));
+  --color-clay-foreground: hsl(var(--clay-foreground));
+  --color-moss: hsl(var(--moss));
+
+  /* 状态色 (2026-06-10) */
+  --color-status-success: hsl(var(--status-success));
+  --color-status-warning: hsl(var(--status-warning));
+  --color-status-error: hsl(var(--status-error));
+  --color-status-running: hsl(var(--status-running));
+
+  /* 品牌扩展 */
+  --color-ochre: hsl(36 85% 50%);
+  --color-indigo: hsl(225 60% 45%);
+
+  /* 动效缓动 */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* 商务中性调色板 — 冷灰底 + 深色字 + 蓝色主操作 + 绿色成功 */
+:root {
+  /* 表面 */
+  --paper: 0 0% 98%; /* #FAFAFA 浅灰 */
+  --background: 0 0% 98%;
+  --foreground: 222 47% 11%; /* #111827 深灰 */
+  --ink: 222 47% 11%;
+
+  /* 卡片 */
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+
+  /* 弹框 */
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+
+  /* 边框 / 输入 / 焦点 */
+  --border: 214 20% 90%; /* #E2E8F0 冷灰 */
+  --input: 214 20% 90%;
+  --ring: 217 91% 60%; /* #3B82F6 蓝色焦点环 */
+
+  /* 中性 */
+  --muted: 210 20% 96%; /* #F1F5F9 浅蓝灰 */
+  --muted-foreground: 215 16% 47%; /* #64748B 中性灰 */
+  --secondary: 210 20% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --accent: 217 91% 60%;
+  --accent-foreground: 0 0% 100%;
+
+  /* 品牌 */
+  --primary: 217 91% 60%; /* #3B82F6 蓝色主操作 */
+  --primary-foreground: 0 0% 100%;
+  --clay: 217 91% 60%; /* #3B82F6 蓝色 — 强调 / 主操作 */
+  --clay-foreground: 0 0% 100%;
+  --moss: 160 84% 39%; /* #10B981 绿色 — 成功 / 监控 */
+
+  /* 错误 */
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* 状态 (2026-06-10 新增) */
+  --status-success: 160 84% 39%;
+  --status-warning: 38 92% 50%;
+  --status-error: 0 84% 60%;
+  --status-running: 199 89% 48%;
+}
+
+.dark {
+  --paper: 222 47% 7%;
+  --background: 222 47% 7%;
+  --foreground: 210 20% 92%;
+  --ink: 210 20% 92%;
+  --card: 222 47% 10%;
+  --card-foreground: 210 20% 92%;
+  --popover: 222 47% 10%;
+  --popover-foreground: 210 20% 92%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 217 33% 18%;
+  --secondary-foreground: 210 20% 92%;
+  --muted: 217 33% 18%;
+  --muted-foreground: 215 16% 65%;
+  --accent: 217 33% 18%;
+  --accent-foreground: 210 20% 92%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 20% 92%;
+  --border: 217 33% 18%;
+  --input: 217 33% 18%;
+  --ring: 217 91% 60%;
+  --clay: 217 91% 60%;
+  --clay-foreground: 0 0% 100%;
+  --moss: 160 84% 39%;
+
+  /* 状态色 - 暗色版 (2026-06-10) */
+  --status-success: 160 84% 39%;
+  --status-warning: 38 92% 50%;
+  --status-error: 0 62.8% 30.6%;
+  --status-running: 199 89% 48%;
+}
+
+/* ========================================================================
+   基础排版 — 商务简洁
+   ======================================================================== */
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+
+  /* 数字用 tabular-nums + 等宽, 避免跳动 */
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum", "zero";
+  }
+
+  /* display 标题 (无衬线, 加粗, 紧凑字距) */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  /* 标签 (小号, 大写, 灰色) */
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* focus ring 全局 */
+  :where(button, a, input, textarea, select, [tabindex]):focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* 背景层 — 纯净无纹理 */
+.bg-paper {
+  background-color: hsl(var(--paper));
+}
+
+/* ========================================================================
+   动画 utilities
+   ======================================================================== */
+@layer utilities {
+  .anim-rise {
+    animation: rise 700ms var(--ease-out-expo) both;
+  }
+  .anim-rise-1 {
+    animation-delay: 50ms;
+  }
+  .anim-rise-2 {
+    animation-delay: 100ms;
+  }
+  .anim-rise-3 {
+    animation-delay: 150ms;
+  }
+  .anim-rise-4 {
+    animation-delay: 200ms;
+  }
+  .anim-rise-5 {
+    animation-delay: 250ms;
+  }
+  .anim-rise-6 {
+    animation-delay: 300ms;
+  }
+
+  .anim-fade {
+    animation: fade 500ms var(--ease-out-expo) both;
+  }
+
+  .anim-marquee {
+    animation: marquee 40s linear infinite;
+  }
+
+  .anim-pulse-dot {
+    animation: pulse-dot 2s var(--ease-in-out-quart) infinite;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.4);
+  }
+}
+
+/* 减少动效偏好 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ========================================================================
+   滚动条 + 滚动行为全局约束 (2026-06-09 修复)
+   根因: body 锁 h-screen, 子级滚容器依赖 min-h-0 正确继承高度;
+         浏览器默认 17px 灰滚动条在 editorial 设计里突兀, 改 8px 透明
+   ======================================================================== */
+html {
+  /* sticky header 高度约 64px + main py-12 (48px) = 112px, 留 16px 余量到 128px */
+  scroll-padding-top: 128px;
+  scroll-behavior: smooth;
+}
+
+/* Firefox 标配: 细滚动条 + 主题色 thumb */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+/* Webkit (Chrome / Edge / Safari) 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--border));
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 200ms var(--ease-out-expo);
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground) / 0.5);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ========================================================================
+   Streamdown typography 工具类扫描 (2026-06-30 streamdown 迁移)
+   monorepo 实际: packages/web/node_modules/streamdown/dist/*.js
+   触发 streamdown 组件内的 Tailwind 类被生成
+   ======================================================================== */
+@source "../../node_modules/streamdown/dist/*.js";

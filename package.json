@@ -1,0 +1,18 @@
+{
+  "name": "rag",
+  "private": true,
+  "scripts": {
+    "backend": "pm2 start ecosystem.config.cjs --only rag-backend",
+    "frontend": "pm2 start ecosystem.config.cjs --only rag-frontend",
+    "start": "pm2 start ecosystem.config.cjs",
+    "stop": "pm2 stop ecosystem.config.cjs",
+    "restart:backend": "pm2 restart rag-backend",
+    "restart:frontend": "pm2 restart rag-frontend",
+    "status": "pm2 status",
+    "logs:backend": "pm2 logs rag-backend",
+    "logs:frontend": "pm2 logs rag-frontend"
+  },
+  "devDependencies": {
+    "pm2": "^ 7.0.1"
+  }
+}

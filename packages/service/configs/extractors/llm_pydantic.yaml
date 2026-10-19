@@ -1,0 +1,9 @@
+extractor_id: llm_pydantic
+enabled: true
+# LLM 配置由运行时环境变量决定, 不硬编码厂商/模型
+# 代码走 OpenAI 兼容协议, 可接任意兼容服务
+llm_provider: "" # env: RAG_LLM_PROVIDER
+model: "" # env: RAG_LLM_MODEL
+temperature: 0.0
+
+# 注: hanlp.yaml 和 rebel.yaml 已删除 (2026-07-01 调研: HanLP 无 RE API, mREBEL 3 年无更新)

@@ -1,0 +1,144 @@
+[project]
+name = "rag"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+  # === DB 迁移 / ORM ===
+  "alembic>=1.18.4", # SQLAlchemy 数据库 schema 迁移工具, 管理 src/storage/migrations/versions/*.py
+  "sqlalchemy>=2.0.50", # 异步 ORM, 所有 model (auth/chat/eval/approvals/account_models) + engine/session 都靠它
+  # === Web 框架 ===
+  "fastapi>=0.136.3", # 主 HTTP 框架, 所有 router (auth/approvals/eval/health/kg/ingest/product_decoders) 都用
+  "uvicorn>=0.49.0", # ASGI server, main.py:30 uvicorn.run 启动用
+  "python-multipart>=0.0.12", # FastAPI Form/File 上传必装, 装漏了 Form data 报 422
+  "bcrypt>=5.0.0", # 密码哈希 (src/auth/account_service.py:8), Account 表 password_reset 字段
+  # === 配置 / 环境 ===
+  "python-dotenv>=1.2.2", # .env 解析, dotenv 包反过来依赖它
+  "dotenv>=0.9.9", # .env 加载封装 (main.py:12 / scripts/seed_admin.py:18 用 load_dotenv)
+  # === 日志 ===
+  "loguru>=0.7,<1.0", # 全量切换 stdlib logging (2026-06-17 spec §1)
+  # === LLM / Embedding / RAG 栈 ===
+  "langfuse>=3.0.0", # LLM 调用可观测性 (src/telemetry/langfuse_client.py), 链路 trace + token 用量统计
+  "mem0ai[nlp]>=2.0.5", # 对话记忆层 (src/memory/mem0_client.py) — PyPI 包名 mem0ai, import 仍用 mem0
+  "spacy==3.8.13", # 知识图谱规则抽取器直接依赖 (src/kg/extractors/spacy_rule/extractor.py), 跟 mem0ai[nlp] pin 对齐, 防版本漂移
+  # === 向量 / 关系存储 ===
+  "psycopg[binary]>=3.3.4", # PostgreSQL 驱动 v3, [binary] 带 libpq 客户端免编译; pgvector + asyncpg 走它
+  "asyncpg>=0.30.0", # PostgreSQL 异步驱动 (FastAPI AsyncEngine 走它, src/approvals/router.py:94)
+  "neo4j>=5.20.0", # Neo4j 官方 Python driver (scripts/neo4j_import.py 灌数据, src/kg/neo4j 查数据)
+  # === PDF / 文档解析 ===
+  "kreuzberg[all]>=4.9.7", # 通用文档解析 (PDF/Word/Excel/图片 OCR) (src/ingest/converters/kreuzberg.py)
+  "pymupdf>=1.27.2.3", # PDF 细粒度解析, 替代 PyPDF2 (src/ingest/analyzers/pdf.py 拿文本块坐标)
+  # === CAD ===
+  "ezdxf>=1.4.4", # DWG/DXF 解析, 不带 [draw] extras 避免 matplotlib 冗余 (src/ingest/converters/cad.py + analyzers)
+  # === Excel / YAML / 表格 ===
+  "openpyxl>=3.1.5", # .xlsx 读写, KG 模板生成 (src/kg/templates.py:10)
+  "pyyaml>=6.0", # YAML 解析, ProductDecoder 和 neo4j_import.py 都用, 显式声明避免幽灵依赖
+  "tabulate>=0.9.0", # CLI 表格渲染 (scripts/neo4j_import.py 打印导入结果)
+  # === 外部服务 / 集成 ===
+  "httpx>=0.27.0", # Dify API 客户端 (src/integrations/dify_client.py) + FastAPI 测试 (TestClient 底层)
+  "docker>=7.1.0", # docker-py SDK, mineru 容器生命周期管理 (tests/ingest/test_mineru_container_cleanup.py)
+  "datasets>=5.0.0", # HuggingFace datasets, 给 RAG 评估管线构造标准评测集 (src/common/evaluation.py)
+  "boto3>=1.34,<2.0", # AWS S3 兼容 SDK, MinIO 走它 (src/storage/object_store.py Minio impl)
+  # === 主机 / 进程资源 ===
+  "psutil>=7.2.2",
+  "redis>=5.2.0", # Redis 监控检查 (src/health/checks.py check_redis), PING + 延迟
+  "nvidia-ml-py>=13.0.0", # NVML 官方绑定 (src/health/checks.py _sample_gpu); 替代 deprecated 的 pynvml PyPI shim, 后者导入会发 FutureWarning
+  "apscheduler>=3.11.2",
+  "pydantic[email]>=2.13.4",
+  "tenacity>=9.1.4",
+  "langchain-core>=1.4,<2.0",
+  "langchain-openai>=1.0,<2.0",
+  "langchain-postgres>=0.0.17,<0.1",
+  "langchain-ollama>=1.0,<2.0",          # ChatOllama (本地 LLM)
+  "langchain-text-splitters>=1.0,<2.0",  # RecursiveCharacterTextSplitter
+  "deepeval>=3.0",                       # RAG 5 指标评估
+  "camelot-py[ml,ghostscript]>=2.0.0", # (2026-07-08) 装 [ml] extra: 启 flavor='ml'; (2026-07-09) +ghostscript: 中文 CID 字体 PDF use_fallback 兜底
+  "pdfplumber>=0.11.10",
+]
+
+[dependency-groups]
+dev = [
+  "pillow>=10.0.0", # 图像处理, 测试夹具生成 + 验证 ingest pipeline 的图片解析
+  "pre-commit>=4.0.0", # git hook 框架, 跑 ruff + oxlint + 提交前测试
+  "pyright>=1.1.391", # 静态类型检查 (当前 basic 模式, 见 pyrightconfig.json)
+  "pytest>=9.0.3", # 测试 runner, 全部 tests/ 走它
+  "pytest-asyncio>=0.24.0", # async 测试支持 (approvals/service 等需要)
+  "pytest-picked>=0.5.1", # lint-staged 第 3 步跑 --picked, 只测改过的 backend 文件
+  "ruff>=0.11.0", # lint + formatter, 替代 flake8 + black
+  "fakeredis>=2.0", # 异步 Redis mock (2026-06-18 redis spec §7), 业务侧 get_redis() 用 fakeredis 替换做 0 真实依赖测试
+  "boto3-stubs[s3]>=1.34,<2.0", # boto3 类型 stub, IDE / mypy 提示 (src/storage/object_store.py Minio impl)
+  "mypy-boto3-s3>=1.34,<2.0", # s3 client 类型定义
+  "pytest-cov>=7.1.0",
+  "pip>=26.0", # uv venv 默认无 pip, 显式加给 spacy download 等用
+  # graphifyy 已删 (2026-07-01 PR1): AI 编码助手 slash command 不是 NLP 抽取库, 项目 0 import
+]
+
+# ruff 配置：用默认 (E + F) + 风格类扩展 (W/I/UP) + 启用 formatter
+# E = pycodestyle errors, F = pyflakes, W = pycodestyle warnings, I = isort, UP = pyupgrade
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+# 默认 select 已是 E + F, 不用覆盖; 扩展加 W/I/UP
+extend-select = ["W", "I", "UP", "E402"]
+# E402 启用 (2026-07-06 ruff-E402 spec): 禁止 src 业务代码 import 混在非 import 语句中间
+# 允许的 3 种函数内 import (重依赖 lazy / 软依赖 / 防循环) 必须紧贴函数体顶部
+# 上方留 1 行空行 + 1 行中文注释说明动机 + # noqa: E402, 见 CLAUDE.md §"函数内 import 规范"
+# F 规则对照:
+#   F401 - imported but unused
+#   F841 - local variable assigned but never used
+#   F821 - undefined name
+# 新增 W/I/UP 规则对照:
+#   W291 - trailing whitespace
+#   W292 - no newline at end of file
+#   I001 - import order unsorted
+#   UP006 - use list[X] instead of List[X] (PEP 585)
+#   UP007 - use X | None instead of Optional[X] (PEP 604)
+
+[tool.ruff.format]
+# 启用 ruff formatter (替代 black, 速度快 ~10×)
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+skip-magic-trailing-comma = false # 保留 magic trailing comma 提示 formatter 断行
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto" # async def test_ 自动当 asyncio test 跑
+markers = ["slow: 慢测试（>2 分钟，跑真实 docker / GPU）", "integration: 集成测试（需要后端启动）"]
+# pythonpath: 让 tests/ 能 import src/ (src.product_decoders) 和 scripts/ (scripts.neo4j_import)
+# "." 是当前工作目录 (跑 pytest 的目录, 一般是仓库根)
+pythonpath = ["src", "."]
+# 2026-06-19 code-quality spec: CI 跑覆盖率, 本地不自动跑 (显式传 --cov 或 CI 环境加)
+addopts = "--strict-markers"
+
+# (2026-07-08) 忽略 3rd-party 库触发的 warnings, 这些是 lib 自己 warn 出来的, 跟项目代码无关.
+# 等后续 dep 升级 (starlette → httpx2 / deepeval / pydantic / psycopg) 一并修, 升级到无 deprecation 的版本后删这层 filter.
+# 格式: action:message:category:module:lineno
+filterwarnings = [
+  "ignore::DeprecationWarning:fastapi.testclient",  # starlette httpx → httpx2
+  "ignore::DeprecationWarning:deepeval.tracing",     # asyncio.iscoroutinefunction → inspect.iscoroutinefunction
+  "ignore::DeprecationWarning:httpx",                 # 同上根因
+  "ignore:astropy:DeprecationWarning",                # ezdxf 内部用 astropy 旧 API
+  "ignore:.*:RuntimeWarning:pydantic._internal",      # pydantic schema generation 漏 await
+  "ignore:.*:ResourceWarning:psycopg._connection_base",  # 异步 mock 漏 .close()
+  "ignore:.*:ResourceWarning:redis.asyncio.connection",   # 同上
+  "ignore:.*:ResourceWarning:asyncio.base_events",    # unclosed event loop
+]
+
+# 2026-06-19 code-quality spec: pytest-cov 配置
+[tool.coverage.run]
+source = ["src"]
+branch = true
+omit = ["src/storage/migrations/*", "src/*/__init__.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "raise NotImplementedError",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+show_missing = true
+skip_covered = false
+precision = 1

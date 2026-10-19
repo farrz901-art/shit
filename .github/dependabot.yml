@@ -1,0 +1,41 @@
+version: 2
+
+# (2026-07-09) 之前 package-ecosystem: "" 无效配置, Dependabot 等于没在跑.
+# 现在监控 3 类依赖:
+#   - pip:   packages/service 后端 Python (uv.lock)
+#   - npm:   packages/web 前端 TypeScript (package.json)
+#   - github-actions: .github/workflows 里 action 版本
+# 周一开 PR, minor/patch 合并成单 PR 避免刷屏.
+updates:
+  # 后端 Python 依赖 (uv.lock)
+  - package-ecosystem: "pip"
+    directory: "/packages/service"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      python-minor-and-patch:
+        update-types: ["minor", "patch"]
+        patterns: ["*"]
+
+  # 前端 TypeScript 依赖 (package.json + bun.lock)
+  - package-ecosystem: "npm"
+    directory: "/packages/web"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      web-minor-and-patch:
+        update-types: ["minor", "patch"]
+        patterns: ["*"]
+
+  # GitHub Actions 版本 (workflows/*.yml)
+  # 防止再次出现 Node 20 deprecated 警告没及时发现 (2026-07-09 教训)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      actions:
+        patterns: ["*"]

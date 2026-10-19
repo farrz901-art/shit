@@ -1,0 +1,43 @@
+#!/usr/bin/env sh
+# Repo-level pre-commit hook (root .husky)
+# 用法: git config core.hooksPath .husky (一次性, 见 README)
+# 后端: lint-staged (ruff) + pyright per-file (只 typecheck staged)
+# 前端: lint-staged (oxlint/oxfmt + vitest related) + tsc --noEmit (类型检查)
+#
+# (2026-06-14) 精简: 删 vitest --changed (vite vitest 4 废弃, 跟 lint-staged
+#   里的 `vitest related` 重复跑两遍). tsc 单独跑 (lint-staged 不含类型检查).
+#   节省: ~30-60s per commit (vitest related 跑 50-90s).
+
+# 先 cd 到 git 根: 用户可能在子目录 commit, 不切就找不到 packages/*
+GIT_ROOT=$(git rev-parse --show-toplevel)
+cd "$GIT_ROOT" || exit 1
+
+set -e
+
+STAGED=$(git diff --cached --name-only)
+
+# 1. lint-staged: 按 staged 文件 glob 派发 ruff / oxlint / oxfmt / per-file test
+#    走根 lint-staged.config.js, 跨 packages/service 和 packages/web
+bunx --bun lint-staged
+
+# 2. 后端: pyright per-file (仅 typecheck staged, lazy resolve import 链)
+#    改全量会 OOM (跟 ruff/oxlint 一样走 per-file 模式)
+#    注: 过滤掉删除的 .py 文件 — pyright 对不存在路径报 "does not exist" exit 非 0,
+#    阻塞 commit 删 migration. 用 --diff-filter=ACMRT (added/copied/modified/renamed/type-changed)
+if echo "$STAGED" | grep -qE '^packages/service/.*\.(py|pyi)$'; then
+  echo ""
+  echo ">>> pyright per-file (packages/service) <<<"
+  PY_FILES=$(git diff --cached --name-only --diff-filter=ACMRT -- 'packages/service/*.py' 'packages/service/**/*.py' 'packages/service/*.pyi' 'packages/service/**/*.pyi' | sed 's|^packages/service/||')
+  if [ -n "$PY_FILES" ]; then
+    (cd packages/service && uv run --no-sync pyright $PY_FILES)
+  fi
+fi
+
+# 3. 前端: tsc --noEmit (类型检查, lint-staged 不含)
+#    tsc 不接 per-file 参数 (TS5112 跟 tsconfig.json 互斥); 走全量 tsc --noEmit
+#    注: 不再跑 vitest, 已在 lint-staged 跑过 (vitest related)
+if echo "$STAGED" | grep -qE '^packages/web/.*\.(ts|tsx|js|jsx)$'; then
+  echo ""
+  echo ">>> tsc (packages/web) <<<"
+  (cd packages/web && bun x tsc --noEmit)
+fi

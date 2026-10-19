@@ -1,0 +1,212 @@
+{
+  "packages/service/src/kg/router.py": {
+    "verified": false,
+    "confidence": "high",
+    "refuted_reason": "KG router: 拆点行号错 (L90-181 错位). 1040→280 (-73%) 虚高: 5 个新模块各加 ~25 行 boilerplate, 实际拆完总行数 ~1060 行不降反升. 跨段共享 _audit_store / _task_store / _REPO_ROOT 3 个 singleton 拆 sub-module 时每个新文件都要 re-import 或改用 facade, 引入耦合. L124-134 已用 sum(...), finding 误说累加可改 sum; L597 frozenset 跟 tuple 同长度; L615-636 if 替 dict-comp 不可行. 拆分有助可读性, 但 reduction 73% 是凭空虚构, 实际预期 1040→950 (~ -8%) 才合理."
+  },
+  "packages/service/src/ingest/pre_analysis/table_extractors/camelot_extractor.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/ingest/pdf_processing/router.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/storage/object_store.py": {
+    "verified": false,
+    "confidence": "high",
+    "refuted_reason": "object_store: 598→100 reduction 是误导, total LOC 保持 ~555. 文件已用 # ===== markers 干净分段, ABC + impls 分离好, factory 3 分支不值得 dict lookup. 拆 14-method ABC 跨 5 模块加 ~50 行 import boilerplate, 没减复杂度. boto3 lazy import 已做 (L301), 主要动机已解决."
+  },
+  "packages/web/lib/api/pre-analysis.ts": {
+    "verified": false,
+    "confidence": "high",
+    "refuted_reason": "pre-analysis.ts: audit 提到复用 handleFetchError (lib/api/errors.ts), 但实际 lib/api/errors.ts 只导出 ApiError/NetworkError/getErrorMessage 三个符号, handleFetchError 不存在. L317-327 5 个本地 const 被算法塞到 2 组, 但 L317-319 跟 L320-321 是局部辅助常量, L323-327 是兜底常量, 两个用途不该合并. L463-479 字段映射 13 处 ?? EMPTY_STRING / Number() ?? ZERO, 把 ZERO/EMPTY_STRING 提 const/index.ts 全局常量会污染命名空间. 585 → ~150 (-74%) 估算乐观, 实际收益打 6-7 折."
+  },
+  "packages/service/src/ingest/pre_analysis/router.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/lookups/admin_router.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/ingest/pdf_processing/converters/cad.py": {
+    "verified": false,
+    "confidence": "medium",
+    "refuted_reason": "cad.py: L1 拆点行号基本准确, 但提议把 6 个 _record_* 方法 (L366-454) 拆到独立 module 忽略耦合成本: 这些方法都通过 self._xy() 拿坐标 helper (L456-463), 拆出去要么让 _xy 变成 free function + 加 import, 要么改 @staticmethod + 全签名拼 _xy_func 参数. L121 _apply_oda_path_from_config() 是模块导入时副作用 (写 ezdxf.options 全局), ODA path 拆到独立 module 后这个 import-time 调用仍然要留着. L328-364 _extract_text 的 6 分支 elif 链提议查表派发但 _record_dimension / _record_leader 签名不一致, 没法做 dict[type, callable] 查表. 综上预计 -75% 减幅虚高, 实际只能 -55% 左右."
+  },
+  "packages/web/lib/api/knowledge.ts": {
+    "verified": false,
+    "confidence": "high",
+    "refuted_reason": "knowledge.ts: audit 提到复用 handleFetchError (lib/api/errors.ts), 但实际 lib/api/errors.ts (全 50 行) 只导出 ApiError/NetworkError/getErrorMessage 三个符号, handleFetchError 不存在; 复用前提不成立. 另 knowledge.ts (L1-502) 根本没有 local handleError 函数, audit 错把 pre-analysis.ts 的 handleError 套到 knowledge.ts 上了. 此外 CRUD wrapper count 是 13, 不是 finding 说的 16. fetchStats 的简化建议 (改 ?${qs}) 会产生非法 URL (空 query 留下 ?)."
+  },
+  "packages/service/scripts/neo4j_import.py": {
+    "verified": false,
+    "confidence": "high",
+    "refuted_reason": "neo4j_import.py: 这是一个 scripts/ 下的一次性 CLI 脚本 (uv run python scripts/neo4j_import.py import), 不会被其它模块 import, 拆 module 不带来复用收益. Neo4jClient._connect() 内部调 _normalize_uri_for_ssl_context, audit 自己说保留在 client 但又把 Neo4jClient 整体拆出去, 自相矛盾. 减少 % 虚高: audit 说 499 → 180 (-64%), 但仅 yaml_to_graph_data + dedup + load_yamls 就 170 行 (L67-236), 加上 cmd_import/cmd_check/main 实际剩余 280+ 行, 真实减幅约 -44%. 单 class (Neo4jClient) 拆独立 module 在 90 行规模属 Python 反模式."
+  },
+  "packages/web/app/[locale]/admin/pre-analysis/_components/pre-analysis-upload-dialog.tsx": {
+    "verified": false,
+    "confidence": "high",
+    "refuted_reason": "upload-dialog: audit 错误声称 renderParamInput 当前未用, 但 L427 实际在调用 (在 JSX 注释块里, 但函数被引用). L1-184 useUploadState 不对, 实际 L145-183. useUploadHandlers 不在 L186-257, 实际 L189-257. chapter config L432-475 错, 实际 L431 起. split yields only -48% (479→250), leaves main at 250 lines still over 200-line threshold."
+  },
+  "packages/service/src/auth/auth_admin_router.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/approvals/router.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/lookups/service.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/web/lib/date.ts": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/ingest/pdf_processing/pipeline.py": {
+    "verified": false,
+    "confidence": "high",
+    "refuted_reason": "pipeline.py: finding 自身在 7 段全部标保留, 唯一提议拆的只是 _run_bucket helper (L211-236 三个 bucket 调度块), 实际能 DRY 掉的仅 ~30 行重复 (logger.banner + 调 process_*_files), 远不到 168 行 (-37%). process_uri (L60-93) 跟 process_files 共享 tempfile/ArchiveHandler/process_files() 调用链, 仅 35 行 wrapper, 充其量再省 30 行. 448 行文件中 ~50 行是 docstring + imports + __main__, 真正业务逻辑 ~400 行, 即使把 _run_bucket + process_uri 全提出也只到 ~340 行 (-14%). 实际 -37% 目标需要结构性拆分, 但 finding 没给这套拆分方案."
+  },
+  "packages/web/app/[locale]/admin/users/_components/admin-users-table.tsx": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/web/app/[locale]/_actions/account.ts": {
+    "verified": false,
+    "confidence": "medium",
+    "refuted_reason": "account.ts: Line ranges 准确, 7-action split 准确. 但 -97% reduction 虚高: 7 个新文件各有 use server + ~8 共享 imports (cookies, getLocale, redirect, revalidatePath, serverAuthHeaders, ApiError, actionError, MIN_PASSWORD_LENGTH, COOKIE_USER_TOKEN, time constants) 约 70 行重复 boilerplate, 累计 post-split total 约 420-455 行, 超过原 435 - 净减少约 0%. 此外 setLoginCookie (L92-102) 被 loginAction (L122) 和 acceptInviteAction (L336) 共享, 拆 sub-file 产生 cross-file 依赖, audit 没解决."
+  },
+  "packages/service/src/auth/account_settings_router.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/web/app/[locale]/_actions/account-settings.ts": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/chat_share/router.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/auth/auth_account_router.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/web/app/[locale]/admin/pre-analysis/[task_id]/_components/admin-pre-analysis-detail-client.tsx": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/chat/service.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/product_decoders/engine.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/config/settings.py": {
+    "verified": false,
+    "confidence": "high",
+    "refuted_reason": "config/settings.py: 拆分假设有 3 个反例, 都跟 config dataclass 必须 .from_env() 内存反馈直接冲突: (1) 主 Settings 是 startup 一次性 import, 100+ env 字段以 flat settings.redis_host 形式被 6 个业务文件 24+ 处直接属性访问, 改成 14 个嵌套 frozen dataclass 必须破坏全部调用点改成 settings.redis.host, 而 routing 已是 ARCH-002/003 完整迁移的稳定面, 属高风险无收益重构; (2) 拆分断送 不 reload single instance 的 monkeypatch.setenv 测试契约 - 当前每个字段的 default_factory lambda 每次访问都重读 os.getenv, 让单测 monkeypatch.setenv 立刻生效, 嵌套 dataclass 必须 frozen=True 才能保一致, 但 frozen + 在 from_env 一次性快照后 setenv 失效, 业务文件已稳定依赖 lazy reload 语义 6 个月; (3) L67 Settings 不是 @dataclass(frozen=True) 而是 @dataclass (可变), 14 个嵌套 dataclass 要拆成 frozen=True 才能组嵌, 但 Paths/CadConfig/ArchiveConfig L33/41/53 已显式 frozen=True 说明设计者明知嵌套要 frozen, 当前扁平可变主类是故意留给 lambda runtime reload 用, 不是疏漏."
+  },
+  "packages/web/components/chat/memory-management-dialog.tsx": {
+    "verified": false,
+    "confidence": "high",
+    "refuted_reason": "memory-management-dialog: 审计 拆分点 L121-140 和 L156-222 明确标注 [已单独模块] 声称 memory-dialog-footer.tsx 和 memory-list-item.tsx 已是独立文件, 但 Glob packages/web/components/chat/memory-*.tsx 只返回 memory-management-dialog.tsx 一个源码文件. 这两个组件当前都内联在 dialog 文件内, 不是已拆出. L62-84 / L93-98 / L106-111 声称 useMemoryApi / useMemoryFilter / useMemoryEdit 已抽 hook 也不成立, 实际是内联箭头函数. 预计减少 -79% 是基于这些 已存在 的拆分, 实际拆分后主文件大概率 ~268 行 (~-29%), 减少率虚高约 50 个百分点."
+  },
+  "packages/service/src/permissions/router.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/memory/service.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/web/app/[locale]/admin/dicts/_components/admin-dicts-client.tsx": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/web/app/[locale]/knowledge/triples/_components/triples-form.tsx": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/web/lib/chat/use-chat-state.ts": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/eval/router.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/web/components/theme-provider.tsx": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/service/src/retrieval/vector_store.py": {
+    "verified": false,
+    "confidence": "high",
+    "refuted_reason": "vector_store.py: audit 在 8 段中 7 段标 保留, 真正能拆的仅 _delete_helpers.py (~22 行, L196-217). 即使抽 22 行 + import boilerplate, 实际减少到 ~295 行 (-7%), 远低于声称的 220 行 (-31%). -31% 减幅虚高 4 倍多, 跟 audit 自己逐段 保留 决定矛盾."
+  },
+  "packages/service/src/health/checks.py": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/web/app/[locale]/decode/page.tsx": {
+    "verified": true,
+    "confidence": "high",
+    "refuted_reason": null
+  },
+  "packages/web/app/[locale]/_actions/knowledge.ts": {
+    "verified": false,
+    "confidence": "high",
+    "refuted_reason": "_actions/knowledge.ts: audit 拆分点行号 (L14-15/L17-76/L78-142/L144-206/L208-268/L270-311) 跟实际文件完全对得上, 5 个 action 拆分子目录结构合理. 但 预计减少 311 -> ~20 barrel (-94%) 是错误指标: 拆分到 5 个子文件 + barrel 总 LOC 不会减少, 只会从 311 行分散到 5×~60 + ~15 barrel = ~315 行 (新增 import/use server/JSDoc 头反而略增). -94% 是 当前文件瘦身 而非 总代码减少, 把度量对象偷换了."
+  },
+  "packages/web/components/common/table/data-table.tsx": {
+    "verified": false,
+    "confidence": "high",
+    "refuted_reason": "data-table.tsx: audit 自己列出的留段加起来是 ~208 行 (types L100-151 ~52 + buildTableOptions L153-208 ~56 + DataTable 主组件 L210-308 ~100), 跟声称的主文件 ~140 行差 ~68 行; 实际减少约 -32%, 不是 -55%, 虚高约 23 个百分点. 拆点行号 (L28-40 / L42-98 / L100-151 / L153-208 / L210-308 / L242-248 / L271-290) 全对, 308 行拆 max-height.ts + col-style.ts 2 个 lib 可行, 但减幅估计存在内部算术错误."
+  },
+  "packages/service/src/auth/account_settings_service.py": {
+    "verified": false,
+    "confidence": "high",
+    "refuted_reason": "account_settings_service.py: 拆分 module 不合理. 12 处 import 必须改路径 + 8 个测试文件的 mock patch 路径全部要改 (每文件平均 5-10 处 mock patch = 40-80 处路径重写). 拆后总行数不降反升: 307 + 6 × module header + 50+ 行 mock patch 改动 约 +30~50 行. finding 第 5 点 数组迭代替循环 是 SQLAlchemy ORM 错建议, setattr + list-comprehension 不会触发 session.flush, 失去 ORM 语义. 当前 307 行结构合理, 函数粒度已经够细, 8 个测试文件 (test_avatar/test_deletion/test_email 等) 已按子域组织, 但 import 都从一个 service 文件 import 是有意为之的 测试按域分组, service 共享入口, 拆 module 破坏稳定结构."
+  },
+  "packages/service/src/chat/router.py": {
+    "verified": true,
+    "confidence": "medium",
+    "refuted_reason": null
+  },
+  "packages/web/app/[locale]/output/[task_id]/_components/task-detail-client.tsx": {
+    "verified": true,
+    "confidence": "medium",
+    "refuted_reason": null
+  }
+}

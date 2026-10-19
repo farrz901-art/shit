@@ -1,0 +1,24 @@
+{
+  "_comment": "知识库批量导入 JSON 模板 (2026-06-08)",
+  "_usage": "items 里每条 item 描述一个写入目标, target=dify 走 Dify 写 QA/Doc, target=neo4j 走 Neo4j 写节点/三元组",
+  "items": [
+    {
+      "target": "dify",
+      "type": "qa",
+      "payload": {
+        "question": "1LE0001 是什么?",
+        "answer": "1LE0001 是西门子 1LE 系列低压电机",
+        "tags": ["电机", "西门子"]
+      }
+    },
+    {
+      "target": "neo4j",
+      "type": "triple",
+      "payload": {
+        "from": { "label": "Product", "key": "model", "value": "1LE0001" },
+        "rel": "BELONGS_TO",
+        "to": { "label": "Series", "key": "name", "value": "1LE 系列" }
+      }
+    }
+  ]
+}

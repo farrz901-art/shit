@@ -1,0 +1,32 @@
+# 表格后端默认配置 (2026-07-06)
+# Admin 上传时不显式选 → 走 pymupdf + 默认参数.
+# 改此文件需重启 service, runner 在 run() 里读一次.
+
+default_backend: pymupdf
+
+backends:
+  pymupdf:
+    enabled: true # 已安装, 无需额外配置
+  camelot:
+    enabled: false # dev 默认禁用, 需要时改 true
+    install_hint: "uv add camelot-py"
+    ml_install_hint: "uv add 'camelot-py[ml]'   # 仅 flavor='ml' 需要 (PyTorch 拉 +500MB)"
+  pdfplumber:
+    enabled: false # dev 默认禁用, 需要时改 true
+    install_hint: "uv add pdfplumber"
+
+# 各后端默认参数 (admin 上传时未指定 → 这里取)
+default_params:
+  pymupdf: {}
+
+  camelot:
+    flavor: "lattice" # lattice | stream | network | hybrid | ml (ml 需 [ml] extra + PyTorch)
+    fallback_chain: true # (2026-07-08) 0 表时按 lattice→network→stream→ml 降级
+    # (2026-07-08) line_scale / row_tol / process_background 走 camelot_extractor._FLAVOR_DEFAULTS,
+    # 不在 yaml 写死 (避免跟 Camelot 2.0 默认漂移)
+
+  pdfplumber:
+    vertical_strategy: "lines" # lines | lines_strict | text | explicit
+    horizontal_strategy: "lines"
+    snap_tolerance: 3 # 像素
+    join_tolerance: 3 # 像素

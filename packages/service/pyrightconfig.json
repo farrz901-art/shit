@@ -1,0 +1,23 @@
+{
+  "include": ["src", "tests", "scripts"],
+  "exclude": [
+    "**/__pycache__",
+    "**/.venv",
+    "**/node_modules",
+    "**/data",
+    "**/ingest_uploads",
+    "**/reports"
+  ],
+  "pythonVersion": "3.14",
+  "typeCheckingMode": "standard",
+  "reportMissingTypeStubs": "none",
+  "reportUnknownMemberType": "none",
+  "reportUnknownVariableType": "none",
+  "reportUnknownArgumentType": "none",
+  "reportUnknownParameterType": "none",
+  "reportUnknownLambdaType": "none",
+  "reportOptionalMemberAccess": "error",
+  "reportOptionalSubscript": "error",
+  "reportOptionalCall": "error",
+  "reportOptionalIterable": "error"
+}

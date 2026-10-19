@@ -1,0 +1,5 @@
+SIMOTICS XP motors are designed for use in Zone 1 hazardous areas with Ex eb certification.
+
+Only for frame size 315 if installed in Zone 1 environments.
+
+The XP motor must not be used in Zone 2 without additional certification.

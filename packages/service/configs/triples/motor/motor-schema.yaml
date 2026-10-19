@@ -1,0 +1,67 @@
+# 电机本体 schema (2026-06-09)
+# 7 类中文 label: 产品系列/产品型号/技术参数/参数值/部件/工况条件/认证标准
+# (2026-06-12) 拆 系列/型号 两层: 业务关系大多挂型号上 (参数/参数值/工况),
+#   认证/部件按粒度可挂系列或型号; 型号通过"属于系列"挂到系列; 系列内部通过
+#   "包含系列" 表达父子层级树
+nodes:
+  - name: 产品系列
+    color: blue
+    fields:
+      - { key: name, label: 系列名, type: string, required: true, unique: true }
+      - {
+          key: manufacturer,
+          label: 厂商,
+          type: enum,
+          options: ["Siemens", "ABB", "Schneider"],
+          required: true,
+        }
+      - { key: description, label: 说明, type: text }
+
+  - name: 产品型号
+    color: indigo
+    fields:
+      - { key: name, label: 型号名, type: string, required: true, unique: true }
+      - { key: description, label: 说明, type: text }
+
+  - name: 技术参数
+    color: purple
+    fields:
+      - { key: name, label: 参数名, type: string, required: true }
+      - { key: unit, label: 单位, type: string }
+      - { key: description, label: 说明, type: text }
+
+  - name: 参数值
+    color: green
+    fields:
+      - { key: value, label: 参数值, type: string, required: true }
+      - { key: description, label: 说明, type: text }
+
+  - name: 部件
+    color: orange
+    fields:
+      - { key: name, label: 部件名, type: string, required: true }
+      - { key: code, label: 部件编码, type: string, required: true }
+      - { key: description, label: 说明, type: text }
+
+  - name: 工况条件
+    color: cyan
+    fields:
+      - { key: name, label: 工况名, type: string, required: true }
+      - { key: description, label: 说明, type: text }
+
+  - name: 认证标准
+    color: pink
+    fields:
+      - { key: name, label: 标准名, type: string, required: true }
+      - { key: description, label: 说明, type: text }
+
+relations:
+  - { name: 属于系列, from: 产品型号, to: 产品系列, cardinality: many_to_one }
+  - { name: 具有参数, from: 产品型号, to: 技术参数, cardinality: many_to_many }
+  - { name: 具有参数值, from: 产品型号, to: 参数值, cardinality: one_to_many }
+  - { name: 参数对应, from: 技术参数, to: 参数值, cardinality: many_to_many }
+  - { name: 适用工况, from: 产品型号, to: 工况条件, cardinality: many_to_many }
+  - { name: 包含部件, from: 产品系列, to: 部件, cardinality: many_to_many }
+  - { name: 符合标准, from: 产品系列, to: 认证标准, cardinality: many_to_many }
+  - { name: 符合标准, from: 产品型号, to: 认证标准, cardinality: many_to_many }
+  - { name: 包含系列, from: 产品系列, to: 产品系列, cardinality: one_to_many }

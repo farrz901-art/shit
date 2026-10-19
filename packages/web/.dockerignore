@@ -1,0 +1,46 @@
+# 依赖 (镜像里重新装)
+node_modules
+.pnp
+.pnp.js
+.bun
+
+# 构建产物 (镜像里重新生成)
+.next
+out
+build
+dist
+*.tsbuildinfo
+next-env.d.ts
+
+# 测试
+coverage
+playwright-report
+test-results
+e2e/.auth
+.vitest-cache
+
+# 工具链本地状态 (不影响构建)
+.git
+.gitignore
+.gitattributes
+.husky
+.vscode
+.idea
+*.swp
+
+# 日志
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 本地环境变量 (用 docker run -e 或 compose 注入)
+.env
+.env*.local
+
+# 杂项
+.DS_Store
+Thumbs.db
+*.md
+!messages/**/*.md

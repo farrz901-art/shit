@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+# commit-msg: conventional commits 格式
+# 格式: <type>(<scope>): <subject>
+#   type: feat/fix/docs/style/refactor/perf/test/build/ci/chore/revert
+#   scope: 字母数字下划线短横线 (kebab-case 推荐)
+#   subject: 祈使语气, 句首不大写 (首字母允许), 句末不加点
+#
+# 字符长度不限制 (用户可写详细 subject)
+# 跳过: git commit --no-verify
+
+MSG_FILE="$1"
+SUBJECT=$(head -n1 "$MSG_FILE")
+
+# ==========================================
+# 新增: 允许 Merge commits 跳过格式检查
+# Git 自动生成的 merge commit 通常以 "Merge " 开头 (大写 M)
+# (2026-07-09) 加 -i 大小写不敏感 + 允许 `merge: ...` (冒号) / `merge ...` (空格) 两种前缀
+# ==========================================
+if echo "$SUBJECT" | grep -qiE '^merge( |:)'; then
+  exit 0
+fi
+
+# 格式检查: type(scope): subject  (scope 可选, breaking-change ! 可选)
+if ! echo "$SUBJECT" | grep -qE '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9_-]+\))?!?: .+$'; then
+  echo ""
+  echo "❌ Commit subject 不符合 conventional commits 格式"
+  echo "   当前: $SUBJECT"
+  echo ""
+  echo "   期望格式: <type>(<scope>): <subject>"
+  echo "   type 取值: feat / fix / docs / style / refactor / perf / test / build / ci / chore / revert"
+  echo "   scope: 字母数字下划线短横线"
+  echo "   例:    feat(api): 加用户认证端点"
+  echo "   例:    fix(ingest): 修 cad 转换 hang 住"
+  echo "   例:    refactor!: 改 health check API 形态"
+  echo ""
+  echo "   跳过: git commit --no-verify"
+  exit 1
+fi

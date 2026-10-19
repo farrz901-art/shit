@@ -1,0 +1,81 @@
+{
+  "$schema": "https://oxc.rs/schema/oxlint.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "style": "warn"
+  },
+  "rules": {
+    "id-length": [
+      "warn",
+      {
+        "exceptions": [
+          "y",
+          "x",
+          "T",
+          "e",
+          "d",
+          "s",
+          "r",
+          "c",
+          "n",
+          "i",
+          "j",
+          "k",
+          "v",
+          "w",
+          "a",
+          "b",
+          "m",
+          "p",
+          "q",
+          "u",
+          "f",
+          "l",
+          "h",
+          "g",
+          "o",
+          "N"
+        ]
+      }
+    ],
+    "no-unused-vars": "error",
+    "no-console": "off",
+    "complexity": ["error", { "max": 20 }],
+    "max-statements": ["error", { "max": 25 }],
+    "unicorn/no-null": "off",
+    "unicorn/number-literal-case": "off",
+    "prefer-ternary": "off",
+    "no-ternary": "off",
+    "sort-keys": "off",
+    "sort-imports": "off",
+    "capitalized-comments": "off",
+    "typescript/consistent-type-definitions": "off"
+  },
+  "ignorePatterns": ["node_modules", ".next", "out", "components/ui"],
+  "overrides": [
+    {
+      "files": ["**/*.test.*", "**/*.spec.*", "**/__tests__/**", "**/e2e/**"],
+      "rules": {
+        "no-magic-numbers": "off",
+        "max-statements": "off",
+        "id-length": "off",
+        "no-ternary": "off",
+        "init-declarations": "off",
+        "sort-imports": "off",
+        "new-cap": "off",
+        "no-underscore-dangle": "off",
+        "max-params": "off",
+        "arrow-body-style": "off",
+        "vitest/prefer-lowercase-title": "off"
+      }
+    },
+    {
+      "files": ["**/components/animations/**", "**/components/motion/**"],
+      "rules": {
+        "no-magic-numbers": "off",
+        "id-length": "off"
+      }
+    }
+  ]
+}

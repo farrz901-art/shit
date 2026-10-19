@@ -1,0 +1,42 @@
+{
+  "dataset_path": "tests/fixtures/rag_eval/qa_dataset.yaml",
+  "total_samples": 2,
+  "successful": 2,
+  "failed": 0,
+  "concurrency": 5,
+  "duration_seconds": 12.34,
+  "avg_metrics": {
+    "faithfulness": 0.85,
+    "answer_relevancy": 0.72,
+    "context_precision": 0.68,
+    "context_recall": 0.91
+  },
+  "per_sample": [
+    {
+      "index": 1,
+      "question": "1LE0001 电机的额定功率是多少?",
+      "ground_truth": "1LE0001 电机的额定功率为 0.37kW",
+      "answer": "根据产品手册, 1LE0001 电机的额定功率为 0.37kW, 适用于 380V 三相电源.",
+      "contexts_count": 3,
+      "metrics": {
+        "faithfulness": 0.92,
+        "answer_relevancy": 0.88,
+        "context_precision": 0.75,
+        "context_recall": 0.95
+      }
+    },
+    {
+      "index": 2,
+      "question": "1LE 系列电机有哪些防护等级?",
+      "ground_truth": "1LE 系列电机支持 IP55 防护等级",
+      "answer": "1LE 系列电机的标准防护等级为 IP55, 可选 IP56 或 IP65.",
+      "contexts_count": 2,
+      "metrics": {
+        "faithfulness": 0.78,
+        "answer_relevancy": 0.56,
+        "context_precision": 0.61,
+        "context_recall": 0.87
+      }
+    }
+  ]
+}

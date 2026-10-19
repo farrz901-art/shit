@@ -1,0 +1,170 @@
+[
+  {
+    "path": "packages/service/src/kg/router.py",
+    "lines": 1040
+  },
+  {
+    "path": "packages/service/src/ingest/pre_analysis/table_extractors/camelot_extractor.py",
+    "lines": 999
+  },
+  {
+    "path": "packages/service/src/ingest/pdf_processing/router.py",
+    "lines": 743
+  },
+  {
+    "path": "packages/service/src/storage/object_store.py",
+    "lines": 598
+  },
+  {
+    "path": "packages/web/lib/api/pre-analysis.ts",
+    "lines": 585
+  },
+  {
+    "path": "packages/service/src/ingest/pre_analysis/router.py",
+    "lines": 568
+  },
+  {
+    "path": "packages/service/src/lookups/admin_router.py",
+    "lines": 562
+  },
+  {
+    "path": "packages/service/src/ingest/pdf_processing/converters/cad.py",
+    "lines": 512
+  },
+  {
+    "path": "packages/web/lib/api/knowledge.ts",
+    "lines": 502
+  },
+  {
+    "path": "packages/service/scripts/neo4j_import.py",
+    "lines": 499
+  },
+  {
+    "path": "packages/web/app/[locale]/admin/pre-analysis/_components/pre-analysis-upload-dialog.tsx",
+    "lines": 479
+  },
+  {
+    "path": "packages/service/src/auth/auth_admin_router.py",
+    "lines": 464
+  },
+  {
+    "path": "packages/service/src/approvals/router.py",
+    "lines": 459
+  },
+  {
+    "path": "packages/web/lib/date.ts",
+    "lines": 450
+  },
+  {
+    "path": "packages/service/src/lookups/service.py",
+    "lines": 450
+  },
+  {
+    "path": "packages/service/src/ingest/pdf_processing/pipeline.py",
+    "lines": 448
+  },
+  {
+    "path": "packages/web/app/[locale]/admin/users/_components/admin-users-table.tsx",
+    "lines": 438
+  },
+  {
+    "path": "packages/web/app/[locale]/_actions/account.ts",
+    "lines": 435
+  },
+  {
+    "path": "packages/service/src/auth/account_settings_router.py",
+    "lines": 424
+  },
+  {
+    "path": "packages/web/app/[locale]/_actions/account-settings.ts",
+    "lines": 418
+  },
+  {
+    "path": "packages/service/src/chat_share/router.py",
+    "lines": 413
+  },
+  {
+    "path": "packages/service/src/auth/auth_account_router.py",
+    "lines": 402
+  },
+  {
+    "path": "packages/web/app/[locale]/admin/pre-analysis/[task_id]/_components/admin-pre-analysis-detail-client.tsx",
+    "lines": 400
+  },
+  {
+    "path": "packages/service/src/chat/service.py",
+    "lines": 398
+  },
+  {
+    "path": "packages/service/src/product_decoders/engine.py",
+    "lines": 390
+  },
+  {
+    "path": "packages/service/src/config/settings.py",
+    "lines": 384
+  },
+  {
+    "path": "packages/web/components/chat/memory-management-dialog.tsx",
+    "lines": 378
+  },
+  {
+    "path": "packages/service/src/permissions/router.py",
+    "lines": 370
+  },
+  {
+    "path": "packages/service/src/memory/service.py",
+    "lines": 340
+  },
+  {
+    "path": "packages/web/app/[locale]/admin/dicts/_components/admin-dicts-client.tsx",
+    "lines": 334
+  },
+  {
+    "path": "packages/web/lib/chat/use-chat-state.ts",
+    "lines": 331
+  },
+  {
+    "path": "packages/web/app/[locale]/knowledge/triples/_components/triples-form.tsx",
+    "lines": 331
+  },
+  {
+    "path": "packages/service/src/eval/router.py",
+    "lines": 323
+  },
+  {
+    "path": "packages/web/components/theme-provider.tsx",
+    "lines": 322
+  },
+  {
+    "path": "packages/service/src/retrieval/vector_store.py",
+    "lines": 317
+  },
+  {
+    "path": "packages/service/src/health/checks.py",
+    "lines": 316
+  },
+  {
+    "path": "packages/web/app/[locale]/decode/page.tsx",
+    "lines": 312
+  },
+  {
+    "path": "packages/web/app/[locale]/_actions/knowledge.ts",
+    "lines": 311
+  },
+  {
+    "path": "packages/web/components/common/table/data-table.tsx",
+    "lines": 308
+  },
+  {
+    "path": "packages/service/src/auth/account_settings_service.py",
+    "lines": 307
+  },
+  {
+    "path": "packages/service/src/chat/router.py",
+    "lines": 305
+  },
+  {
+    "path": "packages/web/app/[locale]/output/[task_id]/_components/task-detail-client.tsx",
+    "lines": 304
+  }
+]

@@ -1,0 +1,19 @@
+Note: If the voltage deviates from rated value, the motor must not be operated.
+
+Danger! A holding brake mustn't be used in hazardous area.
+
+Only for frame size 315 if explosion-proof certification is required.
+
+The coupling must be aligned within tolerance, otherwise vibration will occur.
+
+We recommend that flexible couplings are used for shaft connection.
+
+The motor may be operated at ambient temperature up to 40 degrees Celsius.
+
+Unless otherwise specified, the motor is suitable for indoor installation.
+
+Subject to compliance with IEC 60034-1, the motor is permissible for general use.
+
+The motor must be installed in a dry environment with adequate ventilation.
+
+Can be ordered with optional encoder for speed feedback.

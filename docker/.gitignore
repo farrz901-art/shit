@@ -1,0 +1,8 @@
+# Docker 数据目录 (容器运行时生成, 不入仓)
+# 这三个目录跟 docker-compose.yml 里 ./pg_data / ./pgadmin_data / ./neo4j_data 对应
+# 删了数据 = 删了数据库内容, 慎删
+volumes/
+
+# 也忽略 docker engine 自己生成的临时文件
+.git/
+.docker/

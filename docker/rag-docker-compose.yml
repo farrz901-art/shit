@@ -1,0 +1,200 @@
+name: rag-compose
+
+services:
+  # ==================== PostgreSQL + pgvector ====================
+  postgres:
+    image: pgvector/pgvector:pg18
+    container_name: pgvector
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./volumes/pg_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # ==================== Neo4j (知识图谱) ====================
+  neo4j:
+    image: neo4j:2026.05.0
+    container_name: neo4j
+    restart: unless-stopped
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: ${NEO4J_AUTH:-neo4j/315009}
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_apoc_export_file_enabled: "true"
+      NEO4J_apoc_import_file_enabled: "true"
+      NEO4J_apoc_import_file_use__neo4j__config: "true"
+    volumes:
+      - ./volumes/neo4j/neo4j_logs:/logs
+      - ./volumes/neo4j/neo4j_conf:/conf
+      - ./volumes/neo4j/neo4j_data:/data
+      - ./volumes/neo4j/neo4j_plugins:/plugins
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - app-network
+
+  # ==================== MinIO (对象存储) ====================
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000" # API 端口 (给应用/S3 SDK 用)
+      - "9001:9001" # Web 控制台端口 (给人用浏览器访问)
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin} # 管理员用户名，建议在 .env 中修改
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin} # 管理员密码，建议在 .env 中修改
+    volumes:
+      - ./volumes/minio_data:/data # 持久化存储目录
+    command: server /data --console-address ":9001" # 启动命令，必须指定 --console-address 才能启用 Web UI
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+  # ==================== Redis (缓存 / 向量缓存) ====================
+  redis:
+    image: redis:7.4-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    environment:
+      TZ: Asia/Shanghai
+    command:
+      - redis-server
+      - --appendonly yes # 开启 AOF 持久化，写入更安全<span data-allow-html class='source-item source-aggregated' data-group-key='source-group-1' data-url='https://redis.io/tutorials/operate/orchestration/docker.md' data-id='turn0search3'><span data-allow-html class='source-item-num' data-group-key='source-group-1' data-id='turn0search3' data-url='https://redis.io/tutorials/operate/orchestration/docker.md'><span class='source-item-num-name' data-allow-html>redis.io</span><span data-allow-html class='source-item-num-count'>+1</span></span></span>
+      - --appendfsync everysec # 每秒刷盘，性能与安全的平衡
+      - --requirepass ${REDIS_PASSWORD:-redis123}
+      - --maxmemory 512mb
+      - --maxmemory-policy allkeys-lru # 内存满时 LRU 淘汰，适合缓存场景
+    volumes:
+      - ./volumes/redis_data:/data # 持久化 RDB / AOF 文件
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis123}", "--no-auth-warning", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - app-network
+
+  # ==================== FastAPI 后端 (Python 3.14) ====================
+  service:
+    build:
+      # 构建上下文指向后端包目录 (Dockerfile 在 packages/service/Dockerfile)
+      context: ../packages/service
+      dockerfile: Dockerfile
+    # 显式带 :local tag, 避免 daemon 把 rag-service 当作 docker.io/library/rag-service:latest 去拉,
+    # 配合加速器 (daocloud) 时会返 403 Forbidden 并进入重试循环.
+    # value 用引号包起来避免 IDE YAML 插件把 "rag-service:local" 误判为嵌套隐式 key (Implicit keys 报警).
+    image: "rag-service:local"
+    container_name: rag-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    # 业务配置 (LLM / Embedding key / Dify / 各种 TTL) 从后端包的 .env.local 加载
+    # 注意: env_file 里的 PG_HOST=localhost 等主机名会被下面 environment 覆盖成容器服务名
+    env_file:
+      - ../packages/service/.env.local
+    environment:
+      # --- 容器网络内主机名: 用 compose 服务名替代 localhost ---
+      PG_HOST: postgres
+      PG_PORT: 5432
+      PG_USER: ${POSTGRES_USER}
+      PG_PASSWORD: ${POSTGRES_PASSWORD}
+      PG_DATABASE: ${POSTGRES_DB}
+      NEO4J_URI: bolt://neo4j:7687
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis123}
+      # MinIO S3 端点走容器服务名 (仅当 OBJECT_STORE_BACKEND=minio 时生效)
+      OBJECT_STORE_S3_ENDPOINT: http://minio:9000
+      OBJECT_STORE_S3_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      OBJECT_STORE_S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      # uvicorn 绑所有网卡, 容器外可访问
+      HOST: 0.0.0.0
+      PORT: 8000
+    volumes:
+      # 运行时写数据目录持久化 (跟 Dockerfile 里 mkdir 的目录对齐)
+      - ./volumes/service/data:/app/data
+      - ./volumes/service/ingest_uploads:/app/ingest_uploads
+      - ./volumes/service/reports:/app/reports
+    depends_on:
+      # 等依赖服务 healthy 再启, 避免启动瞬间连不上 PG/Redis
+      postgres:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # ==================== Next.js 前端 (Bun + standalone) ====================
+  web:
+    build:
+      # 构建上下文指向前端包目录 (Dockerfile 在 packages/web/Dockerfile)
+      context: ../packages/web
+      dockerfile: Dockerfile
+      args:
+        # NEXT_PUBLIC_* 是 build 期烤进浏览器 JS 包的变量, 运行时 env_file 喂不进去,
+        # 必须在这里于构建阶段传入. 值来自 docker/.env 的 NEXT_PUBLIC_CHAT_TOKEN.
+        # 必须跟前端 .env.local 的 CHAT_PUBLIC_TOKEN 一致, 否则聊天 CSRF 校验失败.
+        #
+        # 为什么值放 docker/.env 而不是复用 packages/web/.env.local:
+        #   compose 的 build.args 插值只读 docker/.env 或 shell env, 读不到 env_file (运行时机制);
+        #   加上 packages/web/.dockerignore 排除了 .env*.local, 打包时文件也进不去构建上下文.
+        #   所以此变量无法零重复, 是 NEXT_PUBLIC_* + compose 的固有限制, 非配置疏漏.
+        # 是不是最佳实践: build arg 是 Next.js 官方明确列出的合规做法 (见 web/Dockerfile 注释),
+        #   官方"最优"的运行时注入方案是为单镜像跑多环境设计的, 本项目单机自建用不上, 不上.
+        NEXT_PUBLIC_CHAT_TOKEN: ${NEXT_PUBLIC_CHAT_TOKEN:-chat-rag-local-dev}
+    # 显式带 :local tag, 同 service: 防加速器 403 + 重试循环. 引号避免 IDE 误判嵌套隐式 key.
+    image: "rag-web:local"
+    container_name: rag-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    # 前端业务配置 (Dify / OpenAI / CHAT_PUBLIC_TOKEN 等服务端变量) 从前端包的 .env.local 加载
+    # 注意: NEXT_PUBLIC_* 变量在 `bun run build` 时已烤进 JS 包, 运行时 env_file 对它无效,
+    #       需要在 docker build 阶段就存在 (走 build.args), 详见文件顶部说明
+    env_file:
+      - ../packages/web/.env.local
+    environment:
+      NODE_ENV: production
+      # BFF (app/api/[...path]/route.ts) 服务端转发用: 走容器服务名直连后端 (覆盖 env 里的 localhost)
+      RAG_BACKEND_URL: http://service:8000
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+    depends_on:
+      # 后端起来再起前端 (service 无 healthcheck 声明时按 started 判定)
+      service:
+        condition: service_healthy
+    networks:
+      - app-network
+
+# ==================== 顶层 networks ====================
+networks:
+  app-network:
+    name: app-network

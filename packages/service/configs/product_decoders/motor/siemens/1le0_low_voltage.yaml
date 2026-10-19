@@ -1,0 +1,194 @@
+# =============================================================================
+# 西门子 1LE0 低压系列三相异步电动机 - 订货号配置
+# Siemens 1LE0 Low-voltage Motor Series - Order No. Configuration
+# =============================================================================
+# 9 个 position / 16 字符 / 4 个 group
+# group 1 (1LE0001, 7 字符): prefix + efficiency_grade
+# group 2 (1AA4,     4 字符): frame_size + poles + frame_length
+# group 3 (21,       2 字符): voltage
+# group 4 (AA4,      3 字符): mounting + winding_protection + box_location
+# =============================================================================
+
+series: siemens_1le0_low_voltage
+manufacturer: Siemens
+series_name_zh: 西门子低压系列三相异步电动机
+series_name_en: Siemens 1LE0 Low-voltage Motor Series
+version: "2.0"
+source_doc: 西门子电机型号4.png (用户校正版) + product_decoders 重构
+
+# ---------- 路由配置 ----------
+router:
+  match_type: "prefix"
+  prefix: "1LE000"
+  pattern: "^1LE000"
+  priority: 100
+  description: 前缀 1LE000 + 1 位能效等级码
+
+# ---------- 解析器配置 ----------
+decoder:
+  type: "positional"
+  total_chars: 16
+  display_separators: [7, 12]  # dash after chars 7 and 12 → "1LE0001-1AA42-1AA4"
+
+  positions:
+
+    # ---------- group 1: 1LE0001 ----------
+    - idx: 1
+      name: prefix
+      name_zh: 型号前缀
+      name_en: Series prefix
+      char_count: 6
+      type: fixed
+      value: "1LE000"
+
+    - idx: 7
+      name: efficiency_grade
+      name_zh: 能效等级
+      name_en: Efficiency grade
+      char_count: 1
+      type: enum
+      required: true
+      values:
+        "1":
+          code: "EFF3"
+          zh: "高效电动机，中国能效等级 3 级"
+          en: "High Efficiency, China Energy Efficiency Grade 3"
+
+    # ---------- group 2: 1AA4 ----------
+    - idx: 8
+      name: frame_size
+      name_zh: 机座号
+      name_en: Frame size
+      char_count: 2
+      type: enum
+      required: true
+      unit: mm
+      values:
+        "0D": {code: 80,  zh: "80mm 机座",  en: "80mm frame"}
+        "0E": {code: 90,  zh: "90mm 机座",  en: "90mm frame"}
+        "1A": {code: 100, zh: "100mm 机座", en: "100mm frame"}
+        "1B": {code: 112, zh: "112mm 机座", en: "112mm frame"}
+        "1C": {code: 132, zh: "132mm 机座", en: "132mm frame"}
+        "1D": {code: 160, zh: "160mm 机座", en: "160mm frame"}
+        "1E": {code: 180, zh: "180mm 机座", en: "180mm frame"}
+        "2A": {code: 200, zh: "200mm 机座", en: "200mm frame"}
+        "2B": {code: 225, zh: "225mm 机座", en: "225mm frame"}
+        "2C": {code: 250, zh: "250mm 机座", en: "250mm frame"}
+        "2D": {code: 280, zh: "280mm 机座", en: "280mm frame"}
+        "3A": {code: 315, zh: "315mm 机座", en: "315mm frame"}
+        "3B": {code: 355, zh: "355mm 机座", en: "355mm frame"}
+
+    - idx: 10
+      name: poles
+      name_zh: 极数
+      name_en: Number of poles
+      char_count: 1
+      type: enum
+      required: true
+      unit: 极
+      values:
+        A: {code: 2, zh: "2 极", en: "2 poles"}
+        B: {code: 4, zh: "4 极", en: "4 poles"}
+        C: {code: 6, zh: "6 极", en: "6 poles"}
+        D: {code: 8, zh: "8 极", en: "8 poles"}
+
+    - idx: 11
+      name: frame_length
+      name_zh: 机座长度
+      name_en: Frame length
+      char_count: 1
+      type: enum
+      required: true
+      values:
+        "0": {code: "S", zh: "短机座", en: "short"}
+        "1": {code: "S", zh: "短机座", en: "short"}
+        "2": {code: "M", zh: "中机座", en: "medium"}
+        "3": {code: "M", zh: "中机座", en: "medium"}
+        "4": {code: "L", zh: "长机座", en: "long"}
+        "5": {code: "L", zh: "长机座", en: "long"}
+        "6": {code: "L", zh: "长机座", en: "long"}
+        "7": {code: "L", zh: "长机座", en: "long"}
+
+    # ---------- group 3: 21 ----------
+    - idx: 12
+      name: voltage
+      name_zh: 电压、连接方式、频率
+      name_en: Voltage, connections and frequency
+      char_count: 2
+      type: enum
+      required: true
+      values:
+        "21": {code: "220VD/380VY/50", zh: "220VD/380VY 50Hz", en: "220VD/380VY 50Hz"}
+        "22": {code: "230VD/400VY/50", zh: "230VD/400VY 50Hz", en: "230VD/400VY 50Hz"}
+        "23": {code: "240VD/415VY/50", zh: "240VD/415VY 50Hz", en: "240VD/415VY 50Hz"}
+        "33": {code: "380VD/660VY/50", zh: "380VD/660VY 50Hz", en: "380VD/660VY 50Hz"}
+        "34": {code: "400VD/690VY/50", zh: "400VD/690VY 50Hz", en: "400VD/690VY 50Hz"}
+        "35": {code: "415VD/50",      zh: "415VD 50Hz",      en: "415VD 50Hz"}
+        "04": {code: "400VD/50",      zh: "400VD 50Hz",      en: "400VD 50Hz"}
+        "90": {code: "SPECIAL",      zh: "特殊电压与频率 / special voltage & frequency", en: "special voltage & frequency"}
+
+    # ---------- group 4: AA4 ----------
+    - idx: 14
+      name: mounting
+      name_zh: 安装方式
+      name_en: Construction and mounting type
+      char_count: 1
+      type: enum
+      required: true
+      values:
+        A: {code: "IM B3",  zh: "IM B3 卧式底脚安装",  en: "IM B3"}
+        T: {code: "IM B6",  zh: "IM B6 卧式底脚安装",  en: "IM B6"}
+        U: {code: "IM B7",  zh: "IM B7 卧式底脚安装",  en: "IM B7"}
+        V: {code: "IM B8",  zh: "IM B8 卧式底脚安装",  en: "IM B8"}
+        J: {code: "IM B35", zh: "IM B35 卧式底脚+法兰", en: "IM B35"}
+        C: {code: "IM V5",  zh: "IM V5 立式轴向下",    en: "IM V5"}
+        W: {code: "IM V15", zh: "IM V15 立式轴向下",   en: "IM V15"}
+        G: {code: "IM V1",  zh: "IM V1 立式轴向上",    en: "IM V1"}
+        M: {code: "IM V18", zh: "IM V18 立式轴向下",   en: "IM V18"}
+        K: {code: "IM B14", zh: "IM B14 法兰安装",     en: "IM B14"}
+        D: {code: "IM V6",  zh: "IM V6 立式轴向上",    en: "IM V6"}
+        Y: {code: "IM V35", zh: "IM V35 立式带法兰",   en: "IM V35"}
+        H: {code: "IM V3",  zh: "IM V3 立式轴向上",    en: "IM V3"}
+        L: {code: "IM V19", zh: "IM V19 立式轴向下",   en: "IM V19"}
+        N: {code: "IM B34", zh: "IM B34 底脚+法兰",    en: "IM B34"}
+        F: {code: "IM B5",  zh: "IM B5 法兰安装",      en: "IM B5"}
+
+    - idx: 15
+      name: winding_protection
+      name_zh: 绕组保护
+      name_en: Winding protection
+      char_count: 1
+      type: enum
+      required: true
+      values:
+        A: {code: "NONE", zh: "无绕组保护 / without winding protection", en: "without winding protection"}
+        B: {code: "PTC3_TRIP", zh: "3 个 PTC 热敏电阻（跳闸）/ 3 PTC thermistors for tripping", en: "3 PTC thermistors for tripping"}
+        C: {code: "PTC6_TRIP_ALARM", zh: "6 个 PTC 热敏电阻（报警+跳闸）/ 6 PTC thermistors for alarm and tripping", en: "6 PTC thermistors for alarm and tripping"}
+        F: {code: "KTY84", zh: "1 个 KTY 84-130 温度传感器 / 1 temperature sensor KTY 84-130", en: "1 temperature sensor KTY 84-130"}
+        H: {code: "PT100_3", zh: "3 个 Pt100 测温元件 / 3 resistance thermometers Pt100", en: "3 resistance thermometers Pt100"}
+        J: {code: "PT100_6", zh: "6 个 Pt100 测温元件 / 6 resistance thermometers Pt100", en: "6 resistance thermometers Pt100"}
+
+    - idx: 16
+      name: box_location
+      name_zh: 接线盒位置
+      name_en: Connection box location
+      char_count: 1
+      type: enum
+      required: true
+      description: 从驱动端看
+      values:
+        "4": {code: "TOP",  zh: "置顶 / on top",  en: "on top"}
+        "5": {code: "RIGHT", zh: "右侧 / on RHS",  en: "on RHS"}
+        "6": {code: "LEFT",  zh: "左侧 / on LHS",  en: "on LHS"}
+
+# ---------- 校验规则 ----------
+validation:
+  normalize:
+    strip_chars: ["-", " "]
+    upper: true
+  strict_length: true
+
+# ---------- 示例 ----------
+examples:
+  - raw: "1LE0001-1AA42-1AA4"
+    description: "示例: 机座 100, 2 极, 长机座, 220VD/380VY 50Hz, IM B3, 无保护, 接线盒置顶"

@@ -1,0 +1,21 @@
+# Next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+next.config.ts
+# Bun
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+
+test-results/
+playwright-report/
+reports/
+.e2e-logs/
+
+# vitest coverage 产物 (2026-06-19 code-quality spec, 本地开发不入库)
+coverage/
+.jsdoc-coverage/

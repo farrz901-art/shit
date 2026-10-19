@@ -1,0 +1,175 @@
+# dictionaries_seed.yaml — 首批业务字典种子 (2026-06-19 lookup spec §3.3)
+#
+# 用途: 启动时由 scripts/seed_dictionaries.py 读, UPSERT 到 DB.
+# 编辑流程:
+#   1. 改本 yaml (新加字典 / 新加 item / 改 label)
+#   2. 跑 `python -m scripts.seed_dictionaries` 同步 (默认不覆盖 DB 已存在 label)
+#   3. 跑 `python -m scripts.seed_dictionaries --force-sync` 强制用 yaml 覆盖 DB label (危险)
+#   4. 启动时 check_dictionary_refs.py 校验 yaml ⊆ DB, fail-fast
+#
+# 5 个首批字典: approval_review_status / approval_apply_status / approval_kind
+#              / reject_reason (4 个散落 enum 迁移) + page_key (页面权限)
+# item 数量: 3 + 3 + 5 + 6 + 8 = 25
+
+dictionaries:
+  - code: approval_review_status
+    label_zh: 审核状态
+    label_en: Review Status
+    description: 审核项的 review 状态轴
+    items:
+      - { key: pending, label_zh: 待审核, label_en: Pending, sort: 1 }
+      - { key: approved, label_zh: 已批准, label_en: Approved, sort: 2 }
+      - { key: rejected, label_zh: 已拒绝, label_en: Rejected, sort: 3 }
+
+  - code: approval_apply_status
+    label_zh: 写入状态
+    label_en: Apply Status
+    description: 审核通过后写入知识库的 apply 状态轴
+    items:
+      - { key: none, label_zh: 未尝试, label_en: None, sort: 1 }
+      - { key: applied, label_zh: 已写入, label_en: Applied, sort: 2 }
+      - { key: failed, label_zh: 失败, label_en: Failed, sort: 3 }
+
+  - code: approval_kind
+    label_zh: 审核类型
+    label_en: Approval Kind
+    description: 4 种来源 (录 QA / 录三元组 / 批量导入 / 优化回答) + 点赞记录
+    items:
+      - { key: qa, label_zh: 录 QA, label_en: QA, sort: 1 }
+      - { key: triple, label_zh: 录三元组, label_en: Triple, sort: 2 }
+      - { key: batch, label_zh: 批量导入, label_en: Batch, sort: 3 }
+      - { key: optimize, label_zh: 优化回答, label_en: Optimize, sort: 4 }
+      - { key: like, label_zh: 点赞记录, label_en: Like, sort: 5 }
+
+  - code: reject_reason
+    label_zh: 拒绝原因
+    label_en: Reject Reason
+    description: 审核拒绝原因分类 (供 admin 选, 也供业务数据反查)
+    items:
+      - { key: duplicate, label_zh: 重复, label_en: Duplicate, sort: 1 }
+      - { key: low_quality, label_zh: 低质量, label_en: Low Quality, sort: 2 }
+      - { key: incomplete, label_zh: 不完整, label_en: Incomplete, sort: 3 }
+      - { key: wrong_category, label_zh: 分类错, label_en: Wrong Category, sort: 4 }
+      - { key: format_issue, label_zh: 格式问题, label_en: Format Issue, sort: 5 }
+      - { key: other, label_zh: 其他, label_en: Other, sort: 99 }
+
+  - code: page_key
+    label_zh: 页面权限
+    label_en: Page Permission
+    description: 系统页面 key + 路由 (metadata_json.path) + 显示区域 (metadata_json.zone)
+    items:
+      # === 顶级 (parent_id 缺省) ===
+      - {
+          key: admin,
+          label_zh: 管理中心,
+          label_en: Admin,
+          sort: 50,
+          metadata_json: { path: "/admin", is_group: true, icon: "shield" },
+        }
+      - {
+          key: chat,
+          label_zh: 对话,
+          label_en: Chat,
+          sort: 10,
+          metadata_json: { path: "/chat", icon: "message-circle" },
+        }
+      - {
+          key: output,
+          label_zh: 文档结构化,
+          label_en: Output,
+          sort: 20,
+          metadata_json: { path: "/output", icon: "file-text" },
+        }
+      - {
+          key: knowledge,
+          label_zh: 知识库,
+          label_en: Knowledge,
+          sort: 30,
+          metadata_json: { path: "/knowledge", icon: "book-open" },
+        }
+      - {
+          key: evaluate,
+          label_zh: 评估,
+          label_en: Evaluate,
+          sort: 40,
+          metadata_json: { path: "/evaluate", icon: "check-circle" },
+        }
+      - {
+          key: submissions,
+          label_zh: 审核中心,
+          label_en: Submissions,
+          sort: 60,
+          metadata_json: { path: "/submissions", icon: "clipboard-check" },
+        }
+      - {
+          key: decode,
+          label_zh: 型号解析,
+          label_en: Decode,
+          sort: 70,
+          metadata_json: { path: "/decode", icon: "scan" },
+        }
+      - {
+          key: health,
+          label_zh: 监控,
+          label_en: Health,
+          sort: 80,
+          metadata_json: { path: "/health", icon: "activity" },
+        }
+      - {
+          key: buyers,
+          label_zh: 客户画像,
+          label_en: Buyers,
+          sort: 90,
+          metadata_json: { path: "/buyers", icon: "users" },
+        }
+
+      # === 子页 (parent_id 指向顶级) ===
+      - {
+          key: knowledge_extract,
+          label_zh: 知识图谱抽取,
+          label_en: KG Extract,
+          sort: 31,
+          metadata_json: { path: "/knowledge/extract", parent_id: "knowledge" },
+        }
+      - {
+          key: admin_users,
+          label_zh: 用户管理,
+          label_en: Users,
+          sort: 51,
+          metadata_json: { path: "/admin/users", parent_id: "admin" },
+        }
+      - {
+          key: admin_invites,
+          label_zh: 邀请码,
+          label_en: Invites,
+          sort: 52,
+          metadata_json: { path: "/admin/invites", parent_id: "admin" },
+        }
+      - {
+          key: admin_permissions,
+          label_zh: 权限管理,
+          label_en: Permissions,
+          sort: 53,
+          metadata_json: { path: "/admin/permissions", parent_id: "admin" },
+        }
+      - {
+          key: admin_dicts,
+          label_zh: 字典管理,
+          label_en: Dicts,
+          sort: 54,
+          metadata_json: { path: "/admin/dicts", parent_id: "admin" },
+        }
+      - {
+          key: admin_profile_fields,
+          label_zh: 画像字段配置,
+          label_en: Profile Fields,
+          sort: 55,
+          metadata_json: { path: "/admin/profile-fields", parent_id: "admin" },
+        }
+      - {
+          key: admin_pre_analysis,
+          label_zh: PDF 预分析,
+          label_en: Pre-Analysis,
+          sort: 56,
+          metadata_json: { path: "/admin/pre-analysis", parent_id: "admin" },
+        }

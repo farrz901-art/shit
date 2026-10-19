@@ -1,0 +1,57 @@
+# 虚拟环境 (镜像里用 uv sync 重建)
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.ruff_cache
+.pytest_cache
+.mypy_cache
+.pyright_cache
+.pyre
+
+# 运行时数据 (用 volume mount 注入, 别打包进镜像层)
+data
+ingest_uploads
+reports
+*.db
+*.sqlite
+*.sqlite3
+
+# 测试与开发产物
+tests
+htmlcov
+.coverage
+.coverage.*
+coverage.xml
+.tox
+.cache
+
+# 工具脚本 (不进镜像, 调试时手动 mount)
+scripts
+
+# 杂项 / 编辑器 / VCS
+.git
+.gitignore
+.gitattributes
+.husky
+.idea
+.vscode
+*.swp
+.DS_Store
+Thumbs.db
+
+# 日志
+*.log
+
+# 本地环境 (用 docker run --env-file 或 compose 注入)
+.env
+.env*.local
+
+# 文档 / 报告 (镜像不需要)
+*.md
+!prompts/**/*.md
+!configs/**/*.md
+docs
+notebooks
