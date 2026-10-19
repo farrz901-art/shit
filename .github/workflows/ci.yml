@@ -45,10 +45,10 @@ jobs:
       run:
         working-directory: packages/service
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: 安装 uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v7
 
       - name: 同步依赖
         run: uv sync
@@ -78,7 +78,7 @@ jobs:
 
       # coverage 报告留作 artifact
       - name: 上传覆盖率报告
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: backend-coverage
@@ -98,10 +98,10 @@ jobs:
       run:
         working-directory: packages/service
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: 安装 uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v7
 
       - name: 同步依赖
         run: uv sync
@@ -117,7 +117,7 @@ jobs:
       run:
         working-directory: packages/web
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: 安装 bun
         uses: oven-sh/setup-bun@v2
@@ -148,7 +148,7 @@ jobs:
         run: bun run test:coverage
 
       - name: 上传覆盖率报告
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: frontend-coverage
