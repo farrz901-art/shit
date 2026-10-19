@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
   # === DB 迁移 / ORM ===
-  "alembic>=1.18.4", # SQLAlchemy 数据库 schema 迁移工具, 管理 src/storage/migrations/versions/*.py
+  "alembic>=1.20.0", # SQLAlchemy 数据库 schema 迁移工具, 管理 src/storage/migrations/versions/*.py
   "sqlalchemy>=2.0.50", # 异步 ORM, 所有 model (auth/chat/eval/approvals/account_models) + engine/session 都靠它
   # === Web 框架 ===
   "fastapi>=0.136.3", # 主 HTTP 框架, 所有 router (auth/approvals/eval/health/kg/ingest/product_decoders) 都用
