@@ -42,7 +42,7 @@ dependencies = [
   "boto3>=1.34,<2.0", # AWS S3 兼容 SDK, MinIO 走它 (src/storage/object_store.py Minio impl)
   # === 主机 / 进程资源 ===
   "psutil>=7.2.2",
-  "redis>=5.2.0", # Redis 监控检查 (src/health/checks.py check_redis), PING + 延迟
+  "redis>=8.1.0", # Redis 监控检查 (src/health/checks.py check_redis), PING + 延迟
   "nvidia-ml-py>=13.0.0", # NVML 官方绑定 (src/health/checks.py _sample_gpu); 替代 deprecated 的 pynvml PyPI shim, 后者导入会发 FutureWarning
   "apscheduler>=3.11.2",
   "pydantic[email]>=2.13.4",
