@@ -60,7 +60,7 @@ dependencies = [
 [dependency-groups]
 dev = [
   "pillow>=10.0.0", # 图像处理, 测试夹具生成 + 验证 ingest pipeline 的图片解析
-  "pre-commit>=4.0.0", # git hook 框架, 跑 ruff + oxlint + 提交前测试
+  "pre-commit>=4.7.0", # git hook 框架, 跑 ruff + oxlint + 提交前测试
   "pyright>=1.1.391", # 静态类型检查 (当前 basic 模式, 见 pyrightconfig.json)
   "pytest>=9.0.3", # 测试 runner, 全部 tests/ 走它
   "pytest-asyncio>=0.24.0", # async 测试支持 (approvals/service 等需要)
